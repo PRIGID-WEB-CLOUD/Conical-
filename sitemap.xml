@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <!-- Core Static Pages -->
+  <url>
+    <loc>https://chronicle.press/</loc>
+    <lastmod>2026-09-28T18:00:00Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://chronicle.press/articles</loc>
+    <lastmod>2026-09-28T18:00:00Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://chronicle.press/masthead</loc>
+    <lastmod>2026-09-28T18:00:00Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://chronicle.press/about</loc>
+    <lastmod>2026-09-28T18:00:00Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://chronicle.press/citations</loc>
+    <lastmod>2026-09-28T18:00:00Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://chronicle.press/contact</loc>
+    <lastmod>2026-09-28T18:00:00Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://chronicle.press/privacy</loc>
+    <lastmod>2026-09-28T18:00:00Z</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://chronicle.press/terms</loc>
+    <lastmod>2026-09-28T18:00:00Z</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <!-- Published Essays & Critical Inquiries -->
+  <url>
+    <loc>https://chronicle.press/articles/the-architecture-of-silence</loc>
+    <lastmod>2026-03-28T14:30:00Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&amp;fit=crop&amp;w=1400&amp;q=80</image:loc>
+      <image:title>The Architecture of Silence: Modern Urban Design &amp; Quiet Spaces</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://chronicle.press/articles/the-architecture-of-thought-ambient-intelligence</loc>
+    <lastmod>2026-03-27T10:00:00Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&amp;fit=crop&amp;w=1400&amp;q=80</image:loc>
+      <image:title>The Architecture of Thought: How Ambient Intelligence is Reshaping Human Creativity</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://chronicle.press/articles/bio-receptive-facades-living-concrete</loc>
+    <lastmod>2026-03-26T08:00:00Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1518780664697-55e3ad937233?auto=format&amp;fit=crop&amp;w=1400&amp;q=80</image:loc>
+      <image:title>Bio-Receptive Facades: Cultivating Living Concrete in Tropical Metropolises</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://chronicle.press/articles/the-death-of-the-interface-spatial-presence</loc>
+    <lastmod>2026-03-25T12:00:00Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&amp;fit=crop&amp;w=1400&amp;q=80</image:loc>
+      <image:title>The Death of the Interface: Ambient Computing and the Return to Physical Reality</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://chronicle.press/articles/timber-skyscrapers-plywood-futures</loc>
+    <lastmod>2026-03-24T09:00:00Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&amp;fit=crop&amp;w=1400&amp;q=80</image:loc>
+      <image:title>Timber Skyscrapers: Mass Timber Engineering and Carbon-Negative Skylines</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://chronicle.press/articles/computational-typography-variable-fonts</loc>
+    <lastmod>2026-03-23T15:00:00Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&amp;fit=crop&amp;w=1400&amp;q=80</image:loc>
+      <image:title>Computational Typography: Variable Fonts as Dynamic Responsive Entities</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://chronicle.press/articles/regenerative-materials-hempcrete-mycelium</loc>
+    <lastmod>2026-03-22T11:00:00Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&amp;fit=crop&amp;w=1400&amp;q=80</image:loc>
+      <image:title>The Regenerative Material Lexicon: Hempcrete, Mycelium, and Algae Resins</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://chronicle.press/articles/the-monastic-web-digital-asceticism</loc>
+    <lastmod>2026-03-21T16:00:00Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&amp;fit=crop&amp;w=1400&amp;q=80</image:loc>
+      <image:title>The Monastic Web: Designing Digital Spaces of Contemplation and Silence</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://chronicle.press/articles/adaptive-reuse-industrial-cathedrals</loc>
+    <lastmod>2026-03-20T14:00:00Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&amp;fit=crop&amp;w=1400&amp;q=80</image:loc>
+      <image:title>Adaptive Reuse: Transforming Industrial Cathedrals into Civic Sanctuaries</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://chronicle.press/articles/post-ai-authorship-critical-theory</loc>
+    <lastmod>2026-03-19T13:00:00Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1457369804613-52c61a468e7d?auto=format&amp;fit=crop&amp;w=1400&amp;q=80</image:loc>
+      <image:title>Post-AI Authorship: Critical Theory at the Bleeding Edge of Synthetic Prose</image:title>
+    </image:image>
+  </url>
+</urlset>

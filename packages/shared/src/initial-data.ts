@@ -1,0 +1,843 @@
+import { Author, Comment, Post, ActivityItem, DashboardAnalytics, PublicationSettings, Product, SubscriberItem, MediaAsset } from './types';
+
+export const INITIAL_AUTHORS: Record<string, Author> = {
+  elena: {
+    id: 'author-1',
+    slug: 'elena-vance',
+    name: 'Elena Vance',
+    role: 'Senior Architecture & Design Essayist',
+    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80',
+    bio: 'Elena Vance is a senior technology editor and essayist focusing on the intersection of artificial intelligence, human cognition, and digital publishing design. Her work has appeared in numerous architectural and literary reviews.',
+    archiveCount: 38,
+    location: 'Copenhagen & Berlin',
+    joinedYear: 2021,
+    specialties: ['Acoustic Ecology', 'Urban Topography', 'Cognitive Ergonomics'],
+    education: 'M.Arch, Royal Danish Academy of Fine Arts',
+    twitter: 'https://twitter.com',
+    linkedin: 'https://linkedin.com',
+    website: 'https://elenavance.design',
+    featuredQuote: 'True silence is not the complete absence of sound, but the deliberate curation of restorative frequency bands that honor human contemplation.',
+  },
+  julian: {
+    id: 'author-2',
+    slug: 'julian-thorne',
+    name: 'Julian Thorne',
+    role: 'Lead Spatial Designer & Technologist',
+    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80',
+    bio: 'Julian investigates generative architectural frameworks, spatial computing, and post-screen human-machine interface paradigms.',
+    archiveCount: 24,
+    location: 'London, UK',
+    joinedYear: 2022,
+    specialties: ['Spatial Computing', 'Mass Timber Engineering', 'Generative Geometry'],
+    education: 'AA School of Architecture, London',
+    twitter: 'https://twitter.com',
+    linkedin: 'https://linkedin.com',
+    featuredQuote: 'We do not build interfaces to mediate our world; we build them to vanish so the world may be directly felt.',
+  },
+  maya: {
+    id: 'author-3',
+    slug: 'maya-lin',
+    name: 'Maya Lin',
+    role: 'Urban Anthropologist & Cultural Critic',
+    avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=300&q=80',
+    bio: 'Maya writes on slower domestic rhythms, tactile arts, material permanence, and mindful living inside algorithmic metropolises.',
+    archiveCount: 19,
+    location: 'Kyoto & San Francisco',
+    joinedYear: 2023,
+    specialties: ['Material Cultures', 'Biophilic Design', 'Urban Solitude'],
+    education: 'Ph.D. Cultural Anthropology, Kyoto University',
+    twitter: 'https://twitter.com',
+    website: 'https://mayalin.journal',
+    featuredQuote: 'Craft is an antidote to velocity. In a world of instantaneous generation, hand-hewn textures ground human perception.',
+  },
+  aris: {
+    id: 'author-4',
+    slug: 'dr-aris-thorne',
+    name: 'Dr. Aris Thorne',
+    role: 'Director of Cognitive Architecture Labs',
+    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80',
+    bio: 'Cognitive systems researcher specializing in ambient multi-agent spaces, neuro-architecture, and ecological information displays.',
+    archiveCount: 42,
+    location: 'Zurich, Switzerland',
+    joinedYear: 2020,
+    specialties: ['Neuro-Architecture', 'Ambient Intelligence', 'Human Factors'],
+    education: 'ETH Zürich, Computational Neuroscience',
+    linkedin: 'https://linkedin.com',
+    featuredQuote: 'Every room is a cognitive prosthesis. When you enter a space, you borrow its geometry to think.',
+  },
+  clara: {
+    id: 'author-5',
+    slug: 'clara-sterling',
+    name: 'Clara Sterling',
+    role: 'Contributing Editor & Cultural Historian',
+    avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=300&q=80',
+    bio: 'Clara writes on the preservation of collective memory, typographic archeology, and the physical conservation of digital knowledge.',
+    archiveCount: 42,
+    location: 'Boston, Massachusetts',
+    joinedYear: 2021,
+    specialties: ['Epistemic Preservation', 'Typography', 'Media Archaeology'],
+    education: 'Harvard University, Department of History of Science',
+    twitter: 'https://twitter.com',
+    featuredQuote: 'What survives the digital dissolution is not what was most widely mirrored, but what was deliberately carved into immutable physical form.',
+  },
+};
+
+export const INITIAL_POSTS: Post[] = [
+  {
+    id: 'post-architecture-silence',
+    slug: 'the-architecture-of-silence',
+    title: 'The Architecture of Silence: How Modern Urban Design is Reclaiming Quiet Spaces',
+    subtitle: 'As cities densify, acoustical ecology has emerged as the new frontier in urban planning. Architects and sound artists are collaborating to engineer urban sanctuaries that mute the roar of progress.',
+    excerpt: 'As cities densify, acoustical ecology has emerged as the new frontier in urban planning. Architects and sound artists are collaborating to engineer urban sanctuaries that mute the roar of progress.',
+    content: `## The Lost Geometry of Serenity
+
+In the dense urban fabric of the twenty-first century, noise is not merely an inconvenience—it is an invisible pollutant. For decades, city architecture prioritized visual spectacle and vehicular throughput. Today, a subtle yet radical counter-movement is taking root across global metropolises: the deliberate orchestration of auditory stillness.
+
+Acoustic ecology—a discipline once reserved for wildlife researchers and avant-garde sound artists—has moved squarely into the center of civic planning. From subterranean stone reflection pools in Kyoto to biometric buffer walls in Stockholm, designers are treating acoustics as a tactile building material.
+
+> "True silence is not the complete absence of sound, but the deliberate curation of restorative frequency bands that honor human contemplation."
+> — Elena Vance
+
+### 1. Sonic Cartography and Porous Facades
+
+Traditional concrete facades bounce sound waves into street corridors, magnifying tire friction and mechanical air currents. New structural innovations rely on bio-porous terracotta and micro-perforated acoustic masonry that absorb high-decibel street vibrations while allowing gentle wind murmurs to circulate.
+
+Urban planners in Copenhagen have mapped sound decibel contours block by block, zoning 'acoustic preserves' alongside historical monument districts. Within these pockets, vehicle passage is restricted, water features are calibrated to 432 Hz harmonics, and foliage varieties are chosen specifically for their wind-filtering leaf geometries.
+
+### 2. The Psychology of Resonant Rest
+
+Neurological research consistently demonstrates that continuous low-frequency urban hum elevates cortisol and suppresses imaginative thought. When citizens enter pockets of acoustic quiet, the brain transitions from hyper-vigilant scanning to reflective default-mode network activity.
+
+As we look toward the next generation of civil infrastructure, acoustic consideration can no longer be an afterthought. Silence is not a luxury for high-end residential towers—it is a vital public commons essential for civic sanity.`,
+    category: 'Architecture',
+    tags: ['Urban Design', 'Acoustics', 'Sustainability', 'Minimalism'],
+    featuredImage: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1400&q=80',
+    imageCaption: 'A quiet olive tree reflection courtyard designed for contemplative acoustics.',
+    author: INITIAL_AUTHORS.elena,
+    status: 'published',
+    isEditorsPick: true,
+    publishedAt: '2026-03-28T14:30:00Z',
+    updatedAt: '2026-03-28T14:30:00Z',
+    readingTimeMinutes: 6,
+    views: 48920,
+    shares: 1240,
+    readCompletionRate: 88,
+    seo: {
+      metaTitle: 'The Architecture of Silence: Modern Urban Design & Quiet Spaces',
+      metaDescription: 'Explore how acoustic ecology and porous architecture are reclaiming sanctuary spaces in modern densifying cities.',
+      slug: 'the-architecture-of-silence',
+    },
+  },
+  {
+    id: 'post-ambient-thought',
+    slug: 'the-architecture-of-thought-ambient-intelligence',
+    title: 'The Architecture of Thought: How Ambient Intelligence is Reshaping Human Creativity',
+    subtitle: 'As generative systems weave deeper into our daily cognitive workflows, we stand on the precipice of a profound paradigm shift in how digital artifacts are conceived, built, and experienced.',
+    excerpt: 'As generative systems weave deeper into our daily cognitive workflows, we stand on the precipice of a profound paradigm shift in how digital artifacts are conceived, built, and experienced.',
+    content: `## 1. The Shift from Tool to Symbiote
+
+For decades, digital tools have operated under a strict master-servant dynamic. We input keystrokes, commands, and parameters; the machine processes and outputs a deterministic result. Today, however, we are witnessing the emergence of ambient intelligence—systems that do not merely wait for instruction, but continuously perceive, interpret, and anticipate human intent.
+
+This transition forces us to reconsider the boundaries of authorship. When an interface can synthesize a thousand disparate reference points into a coherent structural draft within seconds, the human role shifts from manual execution to curatorial orchestration.
+
+> "We are no longer just building tools to extend our hands; we are cultivating cognitive ecosystems that extend our very imagination."
+> — Dr. Aris Thorne, Cognitive Architecture Labs
+
+## 2. Frictionless Workflows and Deep Focus
+
+The paradox of modern productivity software is that the tools designed to save us time often demand excessive cognitive overhead. Managing tabs, formatting paragraphs, and synchronizing data streams fragment our attention.
+
+Ambient publishing environments dissolve this friction. By embedding intelligent semantic analysis directly into the editing canvas, writers can maintain a continuous state of flow. The system handles metadata categorization, accessibility tagging, and layout optimization invisibly in the background.
+
+## 3. The New Aesthetic of Digital Reading
+
+Typography and layout are foundational to comprehension. As screens become higher resolution and reading contexts shift from chaotic feeds to immersive long-form canvases, editorial design must prioritize spaciousness, deliberate typographic contrast, and robust structural navigation.
+
+Readers demand agency. Providing persistent table of contents, adjustable reading pacing, and frictionless social interaction turns passive consumption into an active, memorable intellectual journey.
+
+## 4. Conclusion: Navigating Tomorrow
+
+As we embrace these advanced creative architectures, our ultimate goal remains unchanged: to forge deeper human connections through clear, resonant storytelling. Technology is merely the medium; human curiosity is the enduring spark.`,
+    category: 'Future of Technology',
+    tags: ['AI', 'Editorial Design', 'Cognition', 'Creativity'],
+    featuredImage: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1400&q=80',
+    imageCaption: 'Ambient cognitive workstations blend context-aware software with focused spatial layouts.',
+    author: INITIAL_AUTHORS.elena,
+    status: 'published',
+    isTrending: true,
+    publishedAt: '2026-10-24T09:00:00Z',
+    updatedAt: '2026-10-24T09:00:00Z',
+    readingTimeMinutes: 8,
+    views: 62410,
+    shares: 2180,
+    readCompletionRate: 91,
+    seo: {
+      metaTitle: 'The Architecture of Thought: Ambient Intelligence in Creativity',
+      metaDescription: 'Discover how ambient intelligence transforms digital creativity from manual execution into curatorial orchestration.',
+      slug: 'the-architecture-of-thought-ambient-intelligence',
+    },
+  },
+  {
+    id: 'post-renaissance-editorial',
+    slug: 'the-renaissance-of-editorial-design',
+    title: 'The Renaissance of Editorial Design in the Digital Age',
+    subtitle: 'As artificial intelligence reshapes content creation, publishers are rediscovering the core tenets of tactile, highly curated editorial design.',
+    excerpt: 'The challenge is no longer about generating volume—it is about establishing distinct visual authority in a sea of algorithmic noise.',
+    content: `As artificial intelligence reshapes the landscape of content creation, publishers are rediscovering the core tenets of tactile, highly curated editorial design. The challenge is no longer about generating volume—it is about establishing distinct visual authority in a sea of algorithmic noise.
+
+Modern content management systems must evolve beyond simple database forms into immersive canvases. When typography, whitespace, and imagery work in absolute harmony, the reader's attention shifts from passive scanning to deep engagement.
+
+## The Architecture of Focus
+
+By stripping away unnecessary visual clutter and leaning into asymmetric layouts, digital publications can replicate the prestigious feel of high-end print magazines while retaining the fluid adaptability of the modern web.
+
+### Essential Pillars of Modern Editorial Craft:
+
+1. **Typographic Hierarchy**: Deliberate interplay between high-contrast editorial serifs and razor-sharp sans body copy.
+2. **Generous Proportions**: Allowing text columns to breathe with wide gutters and responsive margin rhythm.
+3. **Intentional Imagery**: Selecting evocative, purposeful photography over disposable stock illustrations.
+4. **Distraction-Free Reading**: Progressive disclosure of UI chrome and controls, giving the story center stage.`,
+    category: 'Editorial & Design',
+    tags: ['CMS Design', 'Typography', 'Minimalism', 'Publishing'],
+    featuredImage: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1400&q=80',
+    imageCaption: 'A clean editorial workspace with minimal distractions and warm natural lighting.',
+    author: INITIAL_AUTHORS.julian,
+    status: 'published',
+    publishedAt: '2026-03-27T11:15:00Z',
+    updatedAt: '2026-03-27T11:15:00Z',
+    readingTimeMinutes: 4,
+    views: 31200,
+    shares: 840,
+    readCompletionRate: 85,
+    seo: {
+      metaTitle: 'The Renaissance of Editorial Design in the Age of AI',
+      metaDescription: 'Explore how publishers are returning to high-end tactile layout design and editorial hierarchy in the age of automated content creation.',
+      slug: 'the-renaissance-of-editorial-design',
+    },
+  },
+  {
+    id: 'post-autonomous-web-design',
+    slug: 'the-future-of-autonomous-web-design-systems',
+    title: 'The Future of Autonomous Web Design Systems',
+    subtitle: 'From dynamic component tokens to generative visual layouts that adapt in real time to reader context and device form factor.',
+    excerpt: 'Examining the convergence of design tokens, machine learning heuristics, and real-time layout rendering.',
+    content: `## Beyond Static Style Guides
+
+The design systems of the past decade were built around static components: rigid buttons, predefined grid columns, and fixed typography scales. While these systems brought much-needed consistency, they also produced a homogenized web where every application looks indistinguishable.
+
+Autonomous design systems represent a qualitative leap forward. Instead of enforcing rigid layouts, they define semantic relationships and aesthetic principles.
+
+> "A design system should behave like an orchestra conductor, dynamically modulating balance and tension according to the room."
+
+### Responsive Layouts Driven by Intent
+
+By pairing real-time contextual feedback with fluid layout engines, publishers can offer customized reading environments tailored to individual reading velocity, ambient room lighting, and cognitive load.`,
+    category: 'Technology',
+    tags: ['Design Systems', 'Autonomous AI', 'UI/UX', 'Frontend'],
+    featuredImage: 'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&w=1400&q=80',
+    imageCaption: 'Autonomous design workstations integrating generative component tokens.',
+    author: INITIAL_AUTHORS.julian,
+    status: 'published',
+    isTrending: true,
+    publishedAt: '2026-03-26T16:00:00Z',
+    updatedAt: '2026-03-26T16:00:00Z',
+    readingTimeMinutes: 5,
+    views: 45210,
+    shares: 1402,
+    readCompletionRate: 84,
+    seo: {
+      metaTitle: 'The Future of Autonomous Web Design Systems',
+      metaDescription: 'How generative design systems and dynamic tokens are replacing rigid style guides.',
+      slug: 'the-future-of-autonomous-web-design-systems',
+    },
+  },
+  {
+    id: 'post-algorithmic-aesthetics',
+    slug: 'algorithmic-aesthetics-generative-design',
+    title: 'Algorithmic Aesthetics: Generative Design in Post-Industrial Spaces',
+    subtitle: 'How machine learning models are redefining spatial workflows, shifting the paradigm from manual drafting to iterative generative orchestration.',
+    excerpt: 'How machine learning models are redefining spatial workflows, shifting the paradigm from manual drafting to iterative generative orchestration.',
+    content: `Spatial design has entered a new era. Generative geometry algorithms allow architects to simulate millions of structural stress points, wind flows, and light angles before a single steel girder is forged.
+
+In post-industrial warehouse renovations across Berlin and Detroit, algorithms are preserving historical iron frameworks while optimizing modern acoustic envelopes.`,
+    category: 'Technology',
+    tags: ['Generative Design', 'Architecture', 'Post-Industrial'],
+    featuredImage: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1400&q=80',
+    imageCaption: 'Parametric wireframe sculpture within a converted industrial pavilion.',
+    author: INITIAL_AUTHORS.julian,
+    status: 'published',
+    isTrending: true,
+    publishedAt: '2026-03-28T08:00:00Z',
+    updatedAt: '2026-03-28T08:00:00Z',
+    readingTimeMinutes: 4,
+    views: 29400,
+    shares: 720,
+    readCompletionRate: 82,
+    seo: {
+      metaTitle: 'Algorithmic Aesthetics: Generative Design in Post-Industrial Spaces',
+      metaDescription: 'Generative design algorithms transforming architecture in post-industrial spaces.',
+      slug: 'algorithmic-aesthetics-generative-design',
+    },
+  },
+  {
+    id: 'post-slow-living',
+    slug: 'the-philosophy-of-slow-living-hyper-connected',
+    title: 'The Philosophy of Slow Living in Hyper-Connected Metropolises',
+    subtitle: 'An exploration into intentional friction and tactile domestic objects as antidotes to digital fatigue.',
+    excerpt: 'An exploration into intentional friction and tactile domestic objects as antidotes to digital fatigue.',
+    content: `When every service can be summoned in 60 seconds with a tap, convenience transforms into sensory numbness. 
+
+Slow living in the contemporary metropolis is not about retreating to a remote cabin in the woods; it is the radical act of choosing intentional friction within the city: hand-brewed filter coffee, physical bound notebooks, analog mechanical watches, and unhurried conversations with neighborhood bakers.`,
+    category: 'Culture',
+    tags: ['Slow Living', 'Culture', 'Mindfulness', 'Cities'],
+    featuredImage: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1400&q=80',
+    imageCaption: 'A warm, tactile living room bathed in natural morning light.',
+    author: INITIAL_AUTHORS.maya,
+    status: 'published',
+    isTrending: true,
+    publishedAt: '2026-03-26T10:00:00Z',
+    updatedAt: '2026-03-26T10:00:00Z',
+    readingTimeMinutes: 5,
+    views: 37800,
+    shares: 980,
+    readCompletionRate: 89,
+    seo: {
+      metaTitle: 'The Philosophy of Slow Living in Hyper-Connected Cities',
+      metaDescription: 'Intentional friction and tactile rituals as remedies for digital fatigue.',
+      slug: 'the-philosophy-of-slow-living-hyper-connected',
+    },
+  },
+  {
+    id: 'post-vertical-ecosystems',
+    slug: 'vertical-ecosystems-rewilding-concrete-jungle',
+    title: 'Vertical Ecosystems: Rewilding the Concrete Jungle',
+    subtitle: 'Examining the next wave of bio-integrated skyscrapers designed to actively purify urban air and support native pollinator corridors.',
+    excerpt: 'Examining the next wave of bio-integrated skyscrapers designed to actively purify urban air and support native pollinator corridors.',
+    content: `Cities can no longer afford to be concrete deserts. Vertical ecosystems merge hydroponic facade engineering with indigenous botanical taxonomies.
+
+Buildings in Singapore and Milan are demonstrating that high-density living can coexist with thriving songbird habitats, rainwater reclamation cascades, and localized vegetable agriculture.`,
+    category: 'Sustainability',
+    tags: ['Ecology', 'Skyscrapers', 'Green Cities', 'Bio-Design'],
+    featuredImage: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1400&q=80',
+    imageCaption: 'Vertical green gardens integrated into high-rise civil architecture.',
+    author: INITIAL_AUTHORS.aris,
+    status: 'published',
+    isTrending: true,
+    publishedAt: '2026-03-25T14:00:00Z',
+    updatedAt: '2026-03-25T14:00:00Z',
+    readingTimeMinutes: 8,
+    views: 41200,
+    shares: 1120,
+    readCompletionRate: 86,
+    seo: {
+      metaTitle: 'Vertical Ecosystems: Rewilding the Concrete Jungle',
+      metaDescription: 'Bio-integrated skyscrapers purifying city air and rewilding urban skylines.',
+      slug: 'vertical-ecosystems-rewilding-concrete-jungle',
+    },
+  },
+  {
+    id: 'post-collaborative-canvas',
+    slug: 'scaling-real-time-collaborative-canvas-engines',
+    title: 'Scaling Real-Time Collaborative Canvas Engines',
+    subtitle: 'An inside look at the technical challenges of synchronizing complex state graphs across millions of concurrent creative sessions.',
+    excerpt: 'An inside look at the technical challenges of synchronizing complex state graphs across millions of concurrent creative sessions.',
+    content: `Building fluid collaborative tools requires rethinking the browser's rendering pipeline. From Conflict-Free Replicated Data Types (CRDTs) to WebAssembly-accelerated spatial tree indexes, real-time engines must achieve sub-16ms latency.`,
+    category: 'Engineering',
+    tags: ['WebAssembly', 'CRDT', 'Real-Time', 'Canvas'],
+    featuredImage: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1400&q=80',
+    imageCaption: 'Distributed network state graph visualized in real-time.',
+    author: INITIAL_AUTHORS.julian,
+    status: 'published',
+    publishedAt: '2026-03-24T18:00:00Z',
+    updatedAt: '2026-03-24T18:00:00Z',
+    readingTimeMinutes: 6,
+    views: 21900,
+    shares: 610,
+    readCompletionRate: 79,
+    seo: {
+      metaTitle: 'Scaling Real-Time Collaborative Canvas Engines',
+      metaDescription: 'Technical deep dive into CRDTs and WebAssembly canvas rendering.',
+      slug: 'scaling-real-time-collaborative-canvas-engines',
+    },
+  },
+  {
+    id: 'post-whitespace-readership',
+    slug: 'the-psychology-of-whitespace-in-long-form-readership',
+    title: 'The Psychology of Whitespace in Long-Form Readership',
+    subtitle: 'Why generous margins and calculated typographic scaling dramatically increase reading comprehension and intellectual retention.',
+    excerpt: 'Why generous margins and calculated typographic scaling dramatically increase reading comprehension and intellectual retention.',
+    content: `Whitespace is not empty space; it is active breathing room. Cognitive load theory indicates that dense text without proportional margins triggers subconscious hurry and surface skimming.
+
+By calibrating measure (line length between 65-75 characters) and vertical line-height (1.6 to 1.75 ratio), long-form publishers can induce sustained reader immersion.`,
+    category: 'Design Systems',
+    tags: ['Typography', 'Whitespace', 'Psychology', 'Reading'],
+    featuredImage: 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=1400&q=80',
+    imageCaption: 'A notebook with ample margins on a calm wooden reading desk.',
+    author: INITIAL_AUTHORS.elena,
+    status: 'published',
+    publishedAt: '2026-03-23T11:00:00Z',
+    updatedAt: '2026-03-23T11:00:00Z',
+    readingTimeMinutes: 5,
+    views: 34100,
+    shares: 890,
+    readCompletionRate: 90,
+    seo: {
+      metaTitle: 'The Psychology of Whitespace in Long-Form Readership',
+      metaDescription: 'How intentional whitespace enhances focus, comprehension, and retention.',
+      slug: 'the-psychology-of-whitespace-in-long-form-readership',
+    },
+  },
+  {
+    id: 'post-preserving-memory',
+    slug: 'preserving-memory-in-an-age-of-instantaneous-synthesis',
+    title: 'Preserving Memory in an Age of Instantaneous Synthesis',
+    subtitle: 'Reflections on archiving human thought when knowledge generation is automated and ephemeral.',
+    excerpt: 'Reflections on archiving human thought when knowledge generation is automated and ephemeral.',
+    content: `As physical artifacts give way to cloud-based streams, our collective memory is undergoing a profound mutation. We must ask ourselves what stories survive when the medium itself dissolves into code.
+
+Archiving is not simply storage; it is active curation and moral custodianship.`,
+    category: 'Culture',
+    tags: ['Archives', 'Digital Culture', 'Philosophy', 'Memory'],
+    featuredImage: 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=1400&q=80',
+    imageCaption: 'A historic vaulted library preserving centuries of manuscripts.',
+    author: INITIAL_AUTHORS.clara,
+    status: 'published',
+    publishedAt: '2026-03-22T15:00:00Z',
+    updatedAt: '2026-03-22T15:00:00Z',
+    readingTimeMinutes: 10,
+    views: 52800,
+    shares: 1650,
+    readCompletionRate: 93,
+    seo: {
+      metaTitle: 'Preserving Memory in an Age of Instantaneous Synthesis',
+      metaDescription: 'How to archive human cultural heritage in the era of generative ephemeral media.',
+      slug: 'preserving-memory-in-an-age-of-instantaneous-synthesis',
+    },
+  },
+];
+
+export const INITIAL_COMMENTS: Comment[] = [
+  {
+    id: 'comment-1',
+    postId: 'post-ambient-thought',
+    authorName: 'Julian Drake',
+    initials: 'JD',
+    content: 'Fascinating exploration of the transition from tool to symbiote. I’ve noticed similar shifts in our design engineering team when leveraging real-time generative layouts. The friction reduction is palpable.',
+    createdAt: '2026-10-24T12:00:00Z',
+    relativeTime: '2 hours ago',
+    likes: 14,
+    status: 'approved',
+    reply: 'Thank you Julian! The friction reduction is precisely what allows sustained creative velocity.',
+    repliedAt: '2026-10-24T13:30:00Z',
+  },
+  {
+    id: 'comment-2',
+    postId: 'post-ambient-thought',
+    authorName: 'Sarah Miller',
+    initials: 'SM',
+    content: 'The pull quote really resonated with me. We spend so much time fighting our tools instead of letting them amplify our intuition. Excellent read!',
+    createdAt: '2026-10-23T18:00:00Z',
+    relativeTime: 'Yesterday',
+    likes: 6,
+    status: 'approved',
+  },
+  {
+    id: 'comment-3',
+    postId: 'post-ambient-thought',
+    authorName: 'Marcus Chen',
+    initials: 'MC',
+    content: 'Particularly appreciated the table of contents navigation and clean typography rhythm. It turns long-form essay reading into a calm, focused experience on wide screens.',
+    createdAt: '2026-10-23T14:30:00Z',
+    relativeTime: 'Yesterday',
+    likes: 9,
+    status: 'approved',
+  },
+  {
+    id: 'comment-4',
+    postId: 'post-architecture-silence',
+    authorName: 'David Kester',
+    initials: 'DK',
+    content: 'The 432 Hz calibrated water features in Copenhagen are truly remarkable in person. You instantly feel your breath settle upon stepping into the courtyard.',
+    createdAt: '2026-03-29T09:15:00Z',
+    relativeTime: '2 days ago',
+    likes: 11,
+    status: 'approved',
+  },
+  {
+    id: 'comment-5',
+    postId: 'post-renaissance-editorial',
+    authorName: 'Claire Laurent',
+    initials: 'CL',
+    content: 'Could you share more about the font pairings used for the body copy? The legibility at smaller viewports is pristine.',
+    createdAt: '2026-03-28T16:45:00Z',
+    relativeTime: '3 days ago',
+    likes: 4,
+    status: 'pending',
+  },
+];
+
+export const INITIAL_SUBSCRIBERS: SubscriberItem[] = [
+  {
+    id: 'sub-1',
+    email: 'elena.vance@chronicle.press',
+    status: 'active',
+    tier: 'Patron',
+    joinedAt: '2026-01-12T10:00:00Z',
+  },
+  {
+    id: 'sub-2',
+    email: 'julian.thorne@spatial.studio',
+    status: 'active',
+    tier: 'Patron',
+    joinedAt: '2026-01-15T14:22:00Z',
+  },
+  {
+    id: 'sub-3',
+    email: 'marcus.chen@designfoundry.co',
+    status: 'active',
+    tier: 'Weekly Dispatch',
+    joinedAt: '2026-02-01T09:10:00Z',
+  },
+  {
+    id: 'sub-4',
+    email: 'sarah.miller@archdaily.com',
+    status: 'active',
+    tier: 'Weekly Dispatch',
+    joinedAt: '2026-02-14T11:45:00Z',
+  },
+  {
+    id: 'sub-5',
+    email: 'david.k@copenhagen-urban.org',
+    status: 'active',
+    tier: 'Weekly Dispatch',
+    joinedAt: '2026-02-28T16:30:00Z',
+  },
+  {
+    id: 'sub-6',
+    email: 'reader@acme.io',
+    status: 'active',
+    tier: 'Weekly Dispatch',
+    joinedAt: '2026-03-05T08:15:00Z',
+  },
+  {
+    id: 'sub-7',
+    email: 'claire.laurent@sorbonne.fr',
+    status: 'active',
+    tier: 'Complimentary',
+    joinedAt: '2026-03-12T12:00:00Z',
+  },
+  {
+    id: 'sub-8',
+    email: 'alex.morgan@typographic.net',
+    status: 'active',
+    tier: 'Patron',
+    joinedAt: '2026-03-20T17:50:00Z',
+  },
+];
+
+export const INITIAL_ACTIVITIES: ActivityItem[] = [
+  {
+    id: 'act-1',
+    initials: 'JD',
+    actorName: 'Julia Davis',
+    action: 'published a new story',
+    targetTitle: '"Designing for High-Density Interfaces"',
+    timeAgo: '12 minutes ago',
+    categoryBadge: 'UI/UX',
+    statusBadge: 'Published',
+    statusType: 'published',
+  },
+  {
+    id: 'act-2',
+    initials: 'AM',
+    actorName: 'Alex Morgan',
+    action: 'updated draft',
+    targetTitle: '"Typography Scale in 2026"',
+    timeAgo: '45 minutes ago',
+    categoryBadge: 'Typography',
+    statusBadge: 'Draft Saved',
+    statusType: 'draft',
+  },
+  {
+    id: 'act-3',
+    initials: 'SR',
+    actorName: 'Sarah Ross',
+    action: 'moderated 14 comments on',
+    targetTitle: '"The Minimalist Manifesto"',
+    timeAgo: '2 hours ago',
+    categoryBadge: 'Editorial',
+    statusBadge: 'Moderated',
+    statusType: 'moderated',
+  },
+  {
+    id: 'act-4',
+    initials: 'SYS',
+    actorName: 'System Backup',
+    action: 'completed successfully',
+    targetTitle: 'Database & Assets Snapshot',
+    timeAgo: '5 hours ago',
+    categoryBadge: 'Infrastructure',
+    statusBadge: 'System',
+    statusType: 'system',
+  },
+];
+
+export const INITIAL_ANALYTICS: DashboardAnalytics = {
+  totalViews30d: 284592,
+  viewsGrowth: 14.2,
+  activeSubscribers: 42180,
+  subscribersGrowth: 8.4,
+  newSubscribersThisWeek: 1240,
+  engagementRate: 6.48,
+  engagementGrowth: 1.1,
+  avgTimeOnPage: '4m 12s',
+  trafficTrends: {
+    week: [
+      { label: 'Mon', views: 32400 },
+      { label: 'Tue', views: 38200 },
+      { label: 'Wed', views: 39800 },
+      { label: 'Thu', views: 44100 },
+      { label: 'Fri', views: 43500 },
+      { label: 'Sat', views: 51200 },
+      { label: 'Sun', views: 55400 },
+    ],
+    month: [
+      { label: 'Week 1', views: 64200 },
+      { label: 'Week 2', views: 71800 },
+      { label: 'Week 3', views: 79400 },
+      { label: 'Week 4', views: 88500 },
+    ],
+    year: [
+      { label: 'Q1', views: 240000 },
+      { label: 'Q2', views: 310000 },
+      { label: 'Q3', views: 390000 },
+      { label: 'Q4', views: 480000 },
+    ],
+  },
+  topSpotlightPostId: 'post-autonomous-web-design',
+};
+
+export const INITIAL_SETTINGS: PublicationSettings = {
+  publicationName: 'Chronicle Digital Press',
+  tagline: 'Fearless journalism, deep essays, and modern cultural critiques.',
+  primaryLanguage: 'en-US',
+  timezone: 'UTC',
+  brandLogoMark: 'C',
+  brandLogoFileName: 'chronicle-logo-vector.svg',
+  authorProfile: {
+    name: 'Elena Vance',
+    role: 'Editor-in-Chief & Lead Essayist',
+    bio: 'Elena oversees editorial standards, long-form investigative journalism, and architectural criticism at Chronicle.',
+    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80',
+    twitterHandle: '@elenavance_ed',
+    website: 'https://chronicle.press/elena',
+  },
+  appearance: {
+    primaryColor: '#282566',
+    readingTheme: 'editorial-light',
+    fontHeading: 'Playfair / Newsreader Serif',
+    showTableOfContents: true,
+  },
+  seoAndIntegrations: {
+    googleAnalyticsId: 'G-CHRONICLE2026',
+    siteUrl: 'https://chronicle.press',
+    twitterHandle: '@chroniclepress',
+    rssFeedEnabled: true,
+  },
+  notifications: {
+    emailOnComment: true,
+    weeklyDigest: true,
+    breakingDraftAlerts: false,
+  },
+  environment: {
+    stage: 'Production',
+    cmsCore: 'v4.8.2-alpha',
+    database: 'Healthy (12ms)',
+    storageUsed: '4.2 GB / 50 GB',
+  },
+};
+
+export const INITIAL_PRODUCTS: Product[] = [
+  {
+    id: 'prod-issue-14',
+    title: 'Chronicle Vol. 14: The Architecture of Thought',
+    subtitle: 'Limited Slipcase Clothbound Edition with archival foil embossing and 140gsm uncoated Swedish paper.',
+    category: 'Limited Editions',
+    price: 38,
+    format: 'Hardcover Slipcase • 240 Pages',
+    pages: 240,
+    weight: '780g',
+    coverImage: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=1200&q=80',
+    description: 'An expansive survey of cognitive spatial design, ambient intelligence, and tactile publishing. Featuring lead essays by Elena Vance and Dr. Aris Thorne with foldout architectural diagrams.',
+    inStock: true,
+    featured: true,
+    sku: 'CHR-VOL-014',
+    rating: 4.9,
+    reviewsCount: 142,
+  },
+  {
+    id: 'prod-issue-13',
+    title: 'Chronicle Vol. 13: Acoustical Sanctuaries',
+    subtitle: 'Softcover Smyth-Sewn Quarterly Journal exploring modern soundscapes and urban quiet.',
+    category: 'Print Journals',
+    price: 24,
+    format: 'Paperback • 188 Pages',
+    pages: 188,
+    weight: '520g',
+    coverImage: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=1200&q=80',
+    description: 'Investigating soundscapes from Kyoto stone gardens to Copenhagen acoustical zones. Printed with custom plant-based indigo ink.',
+    inStock: true,
+    featured: false,
+    sku: 'CHR-VOL-013',
+    rating: 4.8,
+    reviewsCount: 88,
+  },
+  {
+    id: 'prod-monograph-memory',
+    title: 'Preserving Ephemera: Digital Memory & Stone Archives',
+    subtitle: 'Monograph by Clara Sterling on the cultural archaeology of intangible code.',
+    category: 'Monographs & Books',
+    price: 32,
+    format: 'Quarter-Bound Linen • 160 Pages',
+    pages: 160,
+    weight: '610g',
+    coverImage: 'https://images.unsplash.com/photo-1532012164546-f432f2e37271?auto=format&fit=crop&w=1200&q=80',
+    description: 'A meditation on preserving human curiosity and literary memory when physical mediums dissolve into cloud streams.',
+    inStock: true,
+    featured: true,
+    sku: 'CHR-BK-STERLING-01',
+    rating: 5.0,
+    reviewsCount: 64,
+  },
+  {
+    id: 'prod-subscription-annual',
+    title: 'Chronicle Annual Collector Patron Subscription',
+    subtitle: 'Four quarterly clothbound issues, archival slipcase box, and full digital reading archive access.',
+    category: 'Print Subscriptions',
+    price: 120,
+    format: '4 Quarterly Editions + Collector Box',
+    coverImage: 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&w=1200&q=80',
+    description: 'Receive each new Chronicle volume hot off the press delivered to your home in bespoke protective mailers, with subscriber-only editorial monographs.',
+    inStock: true,
+    featured: true,
+    sku: 'CHR-SUB-ANNUAL-2026',
+    rating: 5.0,
+    reviewsCount: 310,
+  },
+  {
+    id: 'prod-typographic-specimen',
+    title: 'The Chronicle Typographic Broadside & Specimen Box',
+    subtitle: 'Letterpress printed on 300gsm cotton rag with lead alloy editorial types.',
+    category: 'Limited Editions',
+    price: 45,
+    format: '10 Letterpress Folios in Portfolio Sleeve',
+    pages: 10,
+    weight: '400g',
+    coverImage: 'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=1200&q=80',
+    description: 'A study in high-contrast editorial serifs and proportional margins, hand-numbered and stamped by the Chronicle design studio.',
+    inStock: true,
+    featured: false,
+    sku: 'CHR-ART-SPECIMEN',
+    rating: 4.9,
+    reviewsCount: 47,
+  },
+  {
+    id: 'prod-issue-12',
+    title: 'Chronicle Vol. 12: Generative Form & Fluid Tokens',
+    subtitle: 'The seminal issue exploring autonomous layout systems and algorithmic craft.',
+    category: 'Print Journals',
+    price: 24,
+    format: 'Paperback • 196 Pages',
+    pages: 196,
+    weight: '540g',
+    coverImage: 'https://images.unsplash.com/photo-1507842229458-5779ab6ce92a?auto=format&fit=crop&w=1200&q=80',
+    description: 'Featuring deep dives into WebAssembly canvas engines, generative typography grids, and interviews with design directors.',
+    inStock: true,
+    featured: false,
+    sku: 'CHR-VOL-012',
+    rating: 4.7,
+    reviewsCount: 92,
+  },
+];
+
+export const INITIAL_MEDIA: MediaAsset[] = [
+  {
+    id: 'media-1',
+    name: 'brutalist-sanctuary.jpg',
+    url: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1400&q=80',
+    alt: 'Minimalist concrete atrium with morning shadows',
+    caption: 'The central light well of the Kyoto Sound Sanctuary.',
+    category: 'Architecture',
+    dimensions: '1400x933',
+    sizeBytes: 428000,
+    sizeFormatted: '418 KB',
+    mimeType: 'image/jpeg',
+    uploadedAt: '2026-03-24T10:30:00Z',
+  },
+  {
+    id: 'media-2',
+    name: 'editorial-composition.jpg',
+    url: 'https://images.unsplash.com/photo-1507842229458-5779ab6ce92a?auto=format&fit=crop&w=1400&q=80',
+    alt: 'Bound periodicals and geometric wooden table',
+    caption: 'Letterpress folio mockups for Issue 14.',
+    category: 'Editorial',
+    dimensions: '1400x930',
+    sizeBytes: 512000,
+    sizeFormatted: '500 KB',
+    mimeType: 'image/jpeg',
+    uploadedAt: '2026-03-22T14:15:00Z',
+  },
+  {
+    id: 'media-3',
+    name: 'neural-topology.jpg',
+    url: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1400&q=80',
+    alt: 'Dark luminous abstract neural network node grid',
+    caption: 'Visualizing multi-agent attention weight maps.',
+    category: 'Technology',
+    dimensions: '1400x933',
+    sizeBytes: 680000,
+    sizeFormatted: '664 KB',
+    mimeType: 'image/jpeg',
+    uploadedAt: '2026-03-20T09:00:00Z',
+  },
+  {
+    id: 'media-4',
+    name: 'ceramic-sculpture.jpg',
+    url: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=1400&q=80',
+    alt: 'Tactile textured terracotta vase on sandstone pedestal',
+    caption: 'Artisan ceramic vessels from the Nordic Living Pavilion.',
+    category: 'Culture',
+    dimensions: '1400x1050',
+    sizeBytes: 390000,
+    sizeFormatted: '381 KB',
+    mimeType: 'image/jpeg',
+    uploadedAt: '2026-03-18T16:45:00Z',
+  },
+  {
+    id: 'media-5',
+    name: 'timber-pavilion.jpg',
+    url: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1400&q=80',
+    alt: 'Mass-timber structural skyscraper glass facade',
+    caption: 'Cross-laminated timber high-rise in Zurich.',
+    category: 'Architecture',
+    dimensions: '1400x933',
+    sizeBytes: 540000,
+    sizeFormatted: '527 KB',
+    mimeType: 'image/jpeg',
+    uploadedAt: '2026-03-15T11:20:00Z',
+  },
+  {
+    id: 'media-6',
+    name: 'workspace-minimalism.jpg',
+    url: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1400&q=80',
+    alt: 'Clean architectural design studio with large drafting tables',
+    caption: 'The Chronicle editorial bullpen in Berlin.',
+    category: 'Photography',
+    dimensions: '1400x933',
+    sizeBytes: 460000,
+    sizeFormatted: '449 KB',
+    mimeType: 'image/jpeg',
+    uploadedAt: '2026-03-12T08:30:00Z',
+  },
+];
+
