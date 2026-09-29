@@ -1,6 +1,6 @@
 # ☁️ Deploying Chronicle to Cloudflare
 
-This guide explains how to deploy the Chronicle monorepo to the Cloudflare ecosystem using **Cloudflare Pages** and **Cloudflare Workers**.
+This guide explains how to deploy the Chronicle monorepo to the Cloudflare ecosystem using **Cloudflare Pages** (for frontends) and **Cloudflare Workers** (for the API).
 
 ---
 
@@ -27,7 +27,7 @@ Cloudflare Pages is the best place for the high-performance Vite-based frontends
 
 ### A. Deploy Reader App
 1.  Go to the [Cloudflare Dashboard](https://dash.cloudflare.com/) > **Workers & Pages**.
-2.  Click **Create application** > **Pages** > **Connect to Git** (or Upload assets).
+2.  Click **Create application** > **Pages** > **Connect to Git**.
 3.  **Build Settings**:
     *   **Framework preset**: `Vite`
     *   **Build command**: `npm run build:readers`
@@ -44,29 +44,36 @@ Repeat the steps above but use these settings:
 
 ## ⚡ 3. Deploy API Server to Cloudflare Workers
 
-The Express-based API server can be deployed as a Cloudflare Worker. Note that Cloudflare Workers uses a serverless runtime; while Express is supported via compatibility layers, you may need to ensure your database (if any) is reachable via HTTP/WebSockets.
+The Express-based API server requires a small adapter to run on the serverless Workers runtime.
 
 ### Step 1: Install Wrangler
 ```bash
 npm install -g wrangler
 ```
 
-### Step 2: Configure `wrangler.toml`
-Create a `wrangler.toml` in the root:
+### Step 2: Environmental Variable Mapping
+Cloudflare Workers separates variables into **Plaintext** (in `wrangler.toml`) and **Secrets** (via CLI).
 
-```toml
-name = "chronicle-api"
-main = "apps/server/src/standalone.ts"
-compatibility_date = "2024-03-01"
-node_compat = true
+| Variable Category | Variables | Command to Set |
+| :--- | :--- | :--- |
+| **Secrets** | `GEMINI_API_KEY`, `INSTAGRAM_ACCESS_TOKEN`, `FACEBOOK_PAGE_ACCESS_TOKEN`, `X_ACCESS_TOKEN`, `LINKEDIN_OAUTH_TOKEN`, `YOUTUBE_ACCESS_TOKEN`, `GOOGLE_OAUTH_TOKEN`, `WHATSAPP_ACCESS_TOKEN`, `GHOST_ADMIN_API_KEY`, `WORDPRESS_APP_PASSWORD` | `wrangler secret put <KEY>` |
+| **Plaintext** | `NODE_ENV`, `APP_URL`, `INSTAGRAM_USER_ID`, `FACEBOOK_PAGE_ID`, `TELEGRAM_CHANNEL_ID`, `GHOST_ADMIN_URL`, `WORDPRESS_SITE_URL` | Define in `[vars]` block of `wrangler.toml` |
 
-[vars]
-# Add your environment variables here
-NODE_ENV = "production"
-# GEMINI_API_KEY = "..." (Use `wrangler secret put GEMINI_API_KEY` instead)
+### Step 3: Configure `wrangler.toml`
+Use the template provided in the root `wrangler.toml`. It includes mappings for all social media and AI integrations.
+
+### Step 4: Entry Point Adaptation
+Cloudflare Workers use a `fetch` handler. If you are using standard Express, you must use an adapter like `itty-router` or a compatibility layer.
+Update `apps/server/src/standalone.ts` or create a `worker.ts` that exports:
+```typescript
+export default {
+  async fetch(request, env, ctx) {
+    // Adapter logic here
+  }
+}
 ```
 
-### Step 3: Deploy
+### Step 5: Deploy
 ```bash
 wrangler deploy
 ```
@@ -74,23 +81,12 @@ wrangler deploy
 ---
 
 ## 🔗 4. Connect the Dots
-Once your API is live (e.g., `chronicle-api.your-subdomain.workers.dev`), you need to update the frontend environment variables so they point to the live API instead of `localhost`.
+Update your frontend environment variables to point to the live Worker URL.
 
 1.  In **Cloudflare Pages** (for both Reader and Admin):
 2.  Go to **Settings** > **Environment variables**.
-3.  Add `VITE_API_BASE_URL` with the value of your Worker URL.
+3.  Add `VITE_API_BASE_URL` with the value of your Worker URL (e.g., `https://chronicle-api.user.workers.dev`).
 4.  Redeploy the Pages projects.
-
----
-
-## 🔒 5. Security & Secrets
-Never commit your `GEMINI_API_KEY` or social media tokens to `wrangler.toml`. Use Cloudflare Secrets:
-
-```bash
-wrangler secret put GEMINI_API_KEY
-wrangler secret put INSTAGRAM_ACCESS_TOKEN
-# ... and so on
-```
 
 ---
 
