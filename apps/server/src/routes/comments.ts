@@ -44,4 +44,29 @@ router.delete('/:id', (req: Request, res: Response) => {
   res.json({ success: true });
 });
 
+// PUT /api/comments/:id - Edit/update an existing comment
+router.put('/:id', (req: Request, res: Response) => {
+  const id = String(req.params.id);
+  const { content } = req.body;
+  if (!content) {
+    return res.status(400).json({ error: 'Comment content required' });
+  }
+  const updated = serverStore.updateComment(id, content);
+  if (!updated) {
+    return res.status(404).json({ error: 'Comment not found' });
+  }
+  res.json({ comment: updated });
+});
+
+// POST /api/comments/:id/like - Like or unlike a comment
+router.post('/:id/like', (req: Request, res: Response) => {
+  const id = String(req.params.id);
+  const { decrement } = req.body;
+  const updated = serverStore.toggleCommentLike(id, !!decrement);
+  if (!updated) {
+    return res.status(404).json({ error: 'Comment not found' });
+  }
+  res.json({ comment: updated, likes: updated.likes });
+});
+
 export default router;

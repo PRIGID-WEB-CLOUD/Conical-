@@ -14,6 +14,8 @@ router.get('/', (_req: Request, res: Response) => {
     ghost: !!(process.env.GHOST_ADMIN_API_KEY || process.env.GHOST_ADMIN_URL),
     substack: !!(process.env.SUBSTACK_RSS_FEED_URL || process.env.SUBSTACK_PUBLICATION_URL),
     telegram: !!(process.env.TELEGRAM_BOT_TOKEN || process.env.TELEGRAM_CHANNEL_ID),
+    youtube: !!(process.env.YOUTUBE_ACCESS_TOKEN || process.env.GOOGLE_OAUTH_TOKEN),
+    blogger: !!(process.env.BLOGGER_ACCESS_TOKEN || process.env.GOOGLE_OAUTH_TOKEN),
   };
 
   res.json({ envConfig });
@@ -26,9 +28,9 @@ router.get('/syndications', (_req: Request, res: Response) => {
 });
 
 // POST /api/channels/syndications/:id/repost - Re-syndicate / repost a failed dispatch
-router.post('/syndications/:id/repost', (req: Request, res: Response) => {
+router.post('/syndications/:id/repost', async (req: Request, res: Response) => {
   const id = String(req.params.id);
-  const updated = serverStore.repostSyndication(id);
+  const updated = await serverStore.repostSyndication(id);
   if (!updated) {
     return res.status(404).json({ error: 'Syndication log not found' });
   }
@@ -43,6 +45,110 @@ router.delete('/syndications/:id', (req: Request, res: Response) => {
     return res.status(404).json({ error: 'Syndication log not found' });
   }
   res.json({ success: true, id });
+});
+
+// POST /api/channels/:channelId/sync-metrics - Fetch/Sync engagement metrics from social API to database
+router.post('/:channelId/sync-metrics', (req: Request, res: Response) => {
+  const channelId = String(req.params.channelId);
+  const { postId } = req.body;
+  if (!postId) {
+    return res.status(400).json({ error: 'postId is required' });
+  }
+  const result = serverStore.syncSocialMetrics(postId, channelId);
+  if (!result) {
+    return res.status(404).json({ error: 'Post or Channel configuration mismatch' });
+  }
+  res.json({ success: true, ...result });
+});
+
+// GET /api/channels/:channelId/auth-url - Construct dynamic OAuth2 authorize URL
+router.get('/:channelId/auth-url', (req: Request, res: Response) => {
+  const channelId = String(req.params.channelId);
+  const origin = req.headers.referer || req.headers.origin || 'https://ais-dev-6k4td64rydv7fzi3tlpvdl-57519113824.europe-west3.run.app';
+  // Clean up trailing slash
+  const cleanOrigin = origin.endsWith('/') ? origin.slice(0, -1) : origin;
+  const redirectUri = `${cleanOrigin}/api/channels/${channelId}/callback`;
+
+  if (channelId === 'youtube' || channelId === 'blogger') {
+    const clientId = process.env.GOOGLE_CLIENT_ID || '667446834836-mock.apps.googleusercontent.com';
+    const scopes = channelId === 'youtube'
+      ? 'https://www.googleapis.com/auth/youtube.upload https://www.googleapis.com/auth/userinfo.profile'
+      : 'https://www.googleapis.com/auth/blogger https://www.googleapis.com/auth/userinfo.profile';
+
+    const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=${encodeURIComponent(scopes)}&access_type=offline&prompt=consent`;
+    return res.json({ url: authUrl });
+  }
+
+  if (channelId === 'x-twitter') {
+    const clientId = process.env.X_CLIENT_ID || 'XTWITTER_MOCK_CLIENT_ID';
+    const scopes = 'tweet.read tweet.write users.read offline.access';
+    const authUrl = `https://twitter.com/i/oauth2/authorize?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scopes)}&state=state&code_challenge=challenge&code_challenge_method=plain`;
+    return res.json({ url: authUrl });
+  }
+
+  if (channelId === 'linkedin') {
+    const clientId = process.env.LINKEDIN_CLIENT_ID || 'LINKEDIN_MOCK_CLIENT_ID';
+    const scopes = 'w_member_social openid profile email';
+    const authUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scopes)}&state=state`;
+    return res.json({ url: authUrl });
+  }
+  
+  const clientId = channelId === 'instagram' 
+    ? (process.env.INSTAGRAM_CLIENT_ID || '123456789') 
+    : (process.env.FACEBOOK_CLIENT_ID || '987654321');
+
+  const scopes = channelId === 'instagram'
+    ? 'instagram_basic,instagram_content_publish'
+    : 'public_profile,email,pages_show_list,pages_manage_posts,publish_to_groups';
+
+  const providerAuthUrl = channelId === 'instagram'
+    ? 'https://api.instagram.com/oauth/authorize'
+    : 'https://www.facebook.com/v19.0/dialog/oauth';
+
+  const authUrl = `${providerAuthUrl}?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=${encodeURIComponent(scopes)}`;
+  
+  res.json({ url: authUrl });
+});
+
+// GET /api/channels/:channelId/callback - OAuth2 callback receiver and cross-origin notifier
+router.get(['/:channelId/callback', '/:channelId/callback/'], (req: Request, res: Response) => {
+  const channelId = String(req.params.channelId);
+  const code = req.query.code as string | undefined;
+
+  if (code) {
+    if (channelId === 'instagram') {
+      process.env.INSTAGRAM_ACCESS_TOKEN = `oauth_token_${code.substring(0, 15)}`;
+    } else if (channelId === 'facebook') {
+      process.env.FACEBOOK_PAGE_ACCESS_TOKEN = `oauth_token_${code.substring(0, 15)}`;
+    } else if (channelId === 'youtube') {
+      process.env.YOUTUBE_ACCESS_TOKEN = `oauth_token_${code.substring(0, 15)}`;
+      process.env.GOOGLE_OAUTH_TOKEN = `oauth_token_${code.substring(0, 15)}`;
+    } else if (channelId === 'blogger') {
+      process.env.BLOGGER_ACCESS_TOKEN = `oauth_token_${code.substring(0, 15)}`;
+      process.env.GOOGLE_OAUTH_TOKEN = `oauth_token_${code.substring(0, 15)}`;
+    } else if (channelId === 'x-twitter') {
+      process.env.X_ACCESS_TOKEN = `oauth_token_${code.substring(0, 15)}`;
+    } else if (channelId === 'linkedin') {
+      process.env.LINKEDIN_OAUTH_TOKEN = `oauth_token_${code.substring(0, 15)}`;
+    }
+  }
+
+  res.send(`
+    <html>
+      <body style="font-family: sans-serif; text-align: center; padding-top: 50px; background: #fafafa;">
+        <h2 style="color: #1e1b4b;">Connecting Authorization...</h2>
+        <p style="color: #64748b;">Please wait, closing automatically.</p>
+        <script>
+          if (window.opener) {
+            window.opener.postMessage({ type: 'OAUTH_AUTH_SUCCESS', channelId: '${channelId}' }, '*');
+            window.close();
+          } else {
+            window.location.href = '/';
+          }
+        </script>
+      </body>
+    </html>
+  `);
 });
 
 export default router;

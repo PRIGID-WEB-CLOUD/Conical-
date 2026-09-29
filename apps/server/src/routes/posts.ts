@@ -74,4 +74,26 @@ router.delete('/:id', (req: Request, res: Response) => {
   res.json({ success: true, id });
 });
 
+// POST /api/posts/:id/like - Like or unlike a post on the server
+router.post('/:id/like', (req: Request, res: Response) => {
+  const id = String(req.params.id);
+  const { decrement } = req.body;
+  const post = serverStore.incrementPostLikes(id, !!decrement);
+  if (!post) {
+    return res.status(404).json({ error: 'Post not found' });
+  }
+  res.json({ success: true, likes: (post as any).likes || 0 });
+});
+
+// POST /api/posts/:id/share - Share or unshare a post on the server
+router.post('/:id/share', (req: Request, res: Response) => {
+  const id = String(req.params.id);
+  const { decrement } = req.body;
+  const post = serverStore.incrementPostShares(id, !!decrement);
+  if (!post) {
+    return res.status(404).json({ error: 'Post not found' });
+  }
+  res.json({ success: true, shares: post.shares || 0 });
+});
+
 export default router;

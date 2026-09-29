@@ -127,14 +127,39 @@ export const adminApi = {
     }
   },
 
-  async getComments(): Promise<Comment[]> {
+  async getComments(postId?: string): Promise<Comment[]> {
     try {
-      const res = await fetch(`${API_BASE}/comments`);
+      const url = postId ? `${API_BASE}/comments?postId=${postId}` : `${API_BASE}/comments`;
+      const res = await fetch(url);
       if (!res.ok) throw new Error('API error');
       const data = await res.json();
       return data.comments || [];
     } catch {
       return INITIAL_COMMENTS;
+    }
+  },
+
+  async addComment(postId: string, content: string, authorName: string): Promise<Comment> {
+    try {
+      const res = await fetch(`${API_BASE}/comments`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ postId, content, authorName }),
+      });
+      if (!res.ok) throw new Error('API error');
+      const data = await res.json();
+      return data.comment;
+    } catch {
+      return {
+        id: Date.now().toString(),
+        postId,
+        content,
+        authorName,
+        createdAt: new Date().toISOString(),
+        relativeTime: 'Just now',
+        likes: 0,
+        initials: authorName.substring(0, 2).toUpperCase(),
+      };
     }
   },
 
@@ -290,6 +315,87 @@ export const adminApi = {
       return res.ok;
     } catch {
       return false;
+    }
+  },
+
+  async likePost(id: string, decrement?: boolean): Promise<number> {
+    try {
+      const res = await fetch(`${API_BASE}/posts/${id}/like`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ decrement }),
+      });
+      const data = await res.json();
+      return data.likes || 0;
+    } catch {
+      return 0;
+    }
+  },
+
+  async sharePost(id: string, decrement?: boolean): Promise<number> {
+    try {
+      const res = await fetch(`${API_BASE}/posts/${id}/share`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ decrement }),
+      });
+      const data = await res.json();
+      return data.shares || 0;
+    } catch {
+      return 0;
+    }
+  },
+
+  async updateComment(id: string, content: string): Promise<Comment | null> {
+    try {
+      const res = await fetch(`${API_BASE}/comments/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content }),
+      });
+      const data = await res.json();
+      return data.comment;
+    } catch {
+      return null;
+    }
+  },
+
+  async likeComment(id: string, decrement?: boolean): Promise<number> {
+    try {
+      const res = await fetch(`${API_BASE}/comments/${id}/like`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ decrement }),
+      });
+      const data = await res.json();
+      return data.likes || 0;
+    } catch {
+      return 0;
+    }
+  },
+
+  async syncSocialMetrics(channelId: string, postId: string): Promise<{ likes: number; shares: number; newCommentsCount: number } | null> {
+    try {
+      const res = await fetch(`${API_BASE}/channels/${channelId}/sync-metrics`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ postId }),
+      });
+      if (!res.ok) throw new Error('API error');
+      return await res.json();
+    } catch {
+      return null;
+    }
+  },
+
+  async getMetaAuthUrl(channelId: string): Promise<string | null> {
+    try {
+      const res = await fetch(`${API_BASE}/channels/${channelId}/auth-url`);
+      if (!res.ok) throw new Error('API error');
+      const data = await res.json();
+      return data.url || null;
+    } catch {
+      return null;
     }
   },
 };
