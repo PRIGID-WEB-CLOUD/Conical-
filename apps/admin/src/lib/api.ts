@@ -5,7 +5,8 @@ import {
   PublicationSettings,
   DashboardAnalytics,
   ActivityItem,
-  MediaAsset
+  MediaAsset,
+  SyndicationLog
 } from '@chronicle/shared';
 import {
   INITIAL_POSTS,
@@ -249,6 +250,46 @@ export const adminApi = {
       return await res.json();
     } catch {
       return { success: true, message: 'Cron execution completed. 0 scheduled posts pending.' };
+    }
+  },
+
+  async getEnvConfig(): Promise<Record<string, boolean>> {
+    try {
+      const res = await fetch(`${API_BASE}/channels`);
+      if (!res.ok) throw new Error('API error');
+      const data = await res.json();
+      return data.envConfig || {};
+    } catch {
+      return {};
+    }
+  },
+
+  async getSyndications(): Promise<SyndicationLog[]> {
+    try {
+      const res = await fetch(`${API_BASE}/channels/syndications`);
+      if (!res.ok) throw new Error('API error');
+      const data = await res.json();
+      return data.syndications || [];
+    } catch {
+      return [];
+    }
+  },
+
+  async repostSyndication(id: string): Promise<boolean> {
+    try {
+      const res = await fetch(`${API_BASE}/channels/syndications/${id}/repost`, { method: 'POST' });
+      return res.ok;
+    } catch {
+      return false;
+    }
+  },
+
+  async deleteSyndication(id: string): Promise<boolean> {
+    try {
+      const res = await fetch(`${API_BASE}/channels/syndications/${id}`, { method: 'DELETE' });
+      return res.ok;
+    } catch {
+      return false;
     }
   },
 };

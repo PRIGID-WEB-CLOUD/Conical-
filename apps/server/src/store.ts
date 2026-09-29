@@ -8,7 +8,8 @@ import {
   Product,
   AdminUser,
   MediaAsset,
-  Author
+  Author,
+  SyndicationLog
 } from '../../../packages/shared/src/types';
 import {
   INITIAL_POSTS,
@@ -32,6 +33,68 @@ class ServerStore {
   private products: Product[] = [...INITIAL_PRODUCTS];
   private media: MediaAsset[] = [...INITIAL_MEDIA];
   private authors: Author[] = Object.values(INITIAL_AUTHORS);
+  private syndications: SyndicationLog[] = [
+    {
+      id: 'synd-1',
+      postId: 'post-silence',
+      postTitle: 'The Architecture of Silence: Modern Urban Design & Quiet Spaces',
+      channelId: 'x-twitter',
+      channelName: 'X (Twitter) API v2',
+      status: 'failed',
+      error: 'Rate limit exceeded (Status Code: 429). The developer account is currently on the Free tier and has exceeded the maximum of 1,500 posts per month.',
+      timestamp: new Date(Date.now() - 3600000 * 4).toISOString(),
+    },
+    {
+      id: 'synd-2',
+      postId: 'post-silence',
+      postTitle: 'The Architecture of Silence: Modern Urban Design & Quiet Spaces',
+      channelId: 'telegram',
+      channelName: 'Telegram Channel Bot',
+      status: 'success',
+      url: 'https://t.me/chronicle_journal/412',
+      timestamp: new Date(Date.now() - 3600000 * 3.8).toISOString(),
+    },
+    {
+      id: 'synd-3',
+      postId: 'post-ambient-thought',
+      postTitle: 'The Architecture of Thought: How Ambient Intelligence is Reshaping Human Creativity',
+      channelId: 'wordpress',
+      channelName: 'WordPress REST API',
+      status: 'failed',
+      error: 'Connection timeout (ETIMEDOUT). Could not connect to remote WordPress endpoint https://demo.wordpress.org/wp-json/wp/v2/posts.',
+      timestamp: new Date(Date.now() - 3600000 * 12).toISOString(),
+    },
+    {
+      id: 'synd-4',
+      postId: 'post-ambient-thought',
+      postTitle: 'The Architecture of Thought: How Ambient Intelligence is Reshaping Human Creativity',
+      channelId: 'linkedin',
+      channelName: 'LinkedIn Community & Share API',
+      status: 'success',
+      url: 'https://linkedin.com/feed/update/urn:li:activity:7190000000000000000',
+      timestamp: new Date(Date.now() - 3600000 * 11.5).toISOString(),
+    },
+    {
+      id: 'synd-5',
+      postId: 'post-concrete',
+      postTitle: 'Bio-Receptive Facades: Cultivating Living Concrete in Tropical Metropolises',
+      channelId: 'instagram',
+      channelName: 'Instagram Graph API',
+      status: 'failed',
+      error: 'Media validation failed. The provided image URL has an unsupported aspect ratio. Instagram requires images to be between 4:5 (0.8) and 1.91:1.',
+      timestamp: new Date(Date.now() - 3600000 * 24).toISOString(),
+    },
+    {
+      id: 'synd-6',
+      postId: 'post-concrete',
+      postTitle: 'Bio-Receptive Facades: Cultivating Living Concrete in Tropical Metropolises',
+      channelId: 'facebook',
+      channelName: 'Facebook Pages & Groups',
+      status: 'success',
+      url: 'https://facebook.com/chronicle.press/posts/pfbid0sample',
+      timestamp: new Date(Date.now() - 3600000 * 23.8).toISOString(),
+    }
+  ];
   private adminUsers: AdminUser[] = [
     {
       id: 'admin-1',
@@ -242,6 +305,47 @@ class ServerStore {
       return true;
     }
     return false;
+  }
+
+  // Syndications
+  getSyndications(): SyndicationLog[] {
+    return this.syndications;
+  }
+
+  deleteSyndication(id: string): boolean {
+    const idx = this.syndications.findIndex(s => s.id === id);
+    if (idx >= 0) {
+      this.syndications.splice(idx, 1);
+      return true;
+    }
+    return false;
+  }
+
+  repostSyndication(id: string): SyndicationLog | undefined {
+    const synd = this.syndications.find(s => s.id === id);
+    if (synd) {
+      synd.status = 'success';
+      synd.error = undefined;
+      synd.timestamp = new Date().toISOString();
+      if (synd.channelId === 'x-twitter') {
+        synd.url = 'https://twitter.com/chronicle/status/' + Math.floor(Math.random() * 100000000000);
+      } else if (synd.channelId === 'wordpress') {
+        synd.url = 'https://demo.wordpress.org/wp/v2/posts/' + Math.floor(Math.random() * 10000);
+      } else if (synd.channelId === 'instagram') {
+        synd.url = 'https://instagram.com/p/' + Math.random().toString(36).substring(2, 10);
+      }
+      
+      this.addActivity({
+        initials: 'JT',
+        actorName: 'Julian Thorne',
+        action: `Reposted essay successfully to ${synd.channelName}`,
+        targetTitle: synd.postTitle,
+        statusBadge: 'syndicated',
+        statusType: 'published'
+      });
+      return synd;
+    }
+    return undefined;
   }
 
   // Authors

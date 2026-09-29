@@ -8,6 +8,7 @@ import mediaRouter from './routes/media.js';
 import aiRouter from './routes/ai.js';
 import cronRouter from './routes/cron.js';
 import authorsRouter from './routes/authors.js';
+import channelsRouter from './routes/channels.js';
 import { store } from './store.js';
 
 let cronTimerStarted = false;
@@ -45,6 +46,7 @@ export function createApiApp() {
   app.use('/api/ai', aiRouter);
   app.use('/api/cron', cronRouter);
   app.use('/api/authors', authorsRouter);
+  app.use('/api/channels', channelsRouter);
 
   return app;
 }

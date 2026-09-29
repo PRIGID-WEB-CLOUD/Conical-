@@ -191,3 +191,15 @@ export interface AdminUser {
   lastLogin?: string;
   twoFactorEnabled?: boolean;
 }
+
+export interface SyndicationLog {
+  id: string;
+  postId: string;
+  postTitle: string;
+  channelId: string;
+  channelName: string;
+  status: 'success' | 'failed' | 'pending';
+  error?: string;
+  timestamp: string;
+  url?: string;
+}

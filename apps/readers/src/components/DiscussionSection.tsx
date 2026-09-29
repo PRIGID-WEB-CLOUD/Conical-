@@ -108,6 +108,16 @@ export function DiscussionSection({ postId, initialComments }: DiscussionSection
                   {comment.content}
                 </p>
 
+                {comment.reply && (
+                  <div className="mt-3.5 rounded-xl bg-indigo-50 border border-indigo-100 p-3.5 space-y-1">
+                    <div className="text-[10px] font-bold text-indigo-900 uppercase tracking-wider flex items-center gap-1.5">
+                      <span className="h-1.5 w-1.5 rounded-full bg-indigo-600" />
+                      <span>Staff Editorial Response</span>
+                    </div>
+                    <p className="text-xs text-indigo-950 leading-relaxed font-normal">{comment.reply}</p>
+                  </div>
+                )}
+
                 <div className="flex items-center gap-4 pt-2 text-xs text-slate-500">
                   <button
                     onClick={() => handleLike(comment.id)}
