@@ -36,7 +36,8 @@ import {
   KeyRound,
   Info,
   Layout,
-  ExternalLink
+  ExternalLink,
+  Radio
 } from 'lucide-react';
 import { adminApi } from '../lib/api';
 import { Post, Comment } from '@chronicle/shared';
@@ -109,7 +110,7 @@ export function ChannelDetailPage() {
       }
       if (event.data?.type === 'OAUTH_AUTH_SUCCESS' && event.data?.channelId === id) {
         setIsChannelConnected(true);
-        setSyncSuccessMsg(`Meta OAuth2 authenticated successfully! Channel is now fully operational.`);
+        setSyncSuccessMsg(`Authorization authenticated successfully! Channel is now fully operational.`);
         setTimeout(() => setSyncSuccessMsg(null), 6000);
       }
     };
@@ -177,17 +178,17 @@ export function ChannelDetailPage() {
       if (url) {
         const authWindow = window.open(
           url,
-          'meta_oauth_popup',
+          'oauth_popup',
           'width=650,height=750,scrollbars=yes,status=yes'
         );
         if (!authWindow) {
-          alert('Popup blocked. Please allow popups for this dashboard to connect Meta OAuth2.');
+          alert('Popup blocked. Please allow popups for this dashboard to connect credentials.');
         }
       } else {
-        alert('Failed to construct Meta OAuth2 authorization URL.');
+        alert('Failed to construct authorization URL.');
       }
     } catch (e) {
-      console.error('Meta OAuth2 failed', e);
+      console.error('OAuth2 failed', e);
     }
   };
 
@@ -365,8 +366,10 @@ export function ChannelDetailPage() {
 
   // Channel details data mapping
   const channelMeta = {
-    instagram: { name: 'Instagram', color: 'from-pink-500 via-purple-600 to-indigo-700', icon: Instagram },
-    facebook: { name: 'Facebook Pages & Groups', color: 'from-blue-600 to-indigo-900', icon: Facebook },
+    instagram: { name: 'Instagram Feed & Reels', color: 'from-pink-500 via-purple-600 to-indigo-700', icon: Instagram },
+    'instagram-channel': { name: 'Instagram Broadcast Channel', color: 'from-purple-600 to-blue-600', icon: Radio },
+    facebook: { name: 'Facebook Pages', color: 'from-blue-600 to-indigo-900', icon: Facebook },
+    'facebook-group': { name: 'Facebook Groups', color: 'from-indigo-600 to-blue-800', icon: Users },
     'x-twitter': { name: 'X / Twitter', color: 'from-slate-900 to-slate-950', icon: Twitter },
     linkedin: { name: 'LinkedIn Network', color: 'from-blue-700 to-sky-900', icon: Linkedin },
     wordpress: { name: 'WordPress CMS', color: 'from-blue-500 to-indigo-800', icon: Globe },
@@ -375,6 +378,7 @@ export function ChannelDetailPage() {
     telegram: { name: 'Telegram Channel', color: 'from-sky-500 to-blue-700', icon: TelegramIcon },
     youtube: { name: 'YouTube Channel', color: 'from-red-600 to-red-800', icon: Youtube },
     blogger: { name: 'Blogger platform', color: 'from-orange-500 to-amber-700', icon: Globe },
+    'whatsapp-channel': { name: 'WhatsApp Channel', color: 'from-emerald-500 to-green-700', icon: MessageCircle },
   }[id] || { name: 'Social Channel', color: 'from-slate-900 to-indigo-950', icon: Instagram };
 
   return (
@@ -489,7 +493,7 @@ export function ChannelDetailPage() {
             </p>
           </div>
 
-          {(id === 'facebook' || id === 'instagram' || id === 'youtube' || id === 'blogger' || id === 'x-twitter' || id === 'linkedin') ? (
+          {(id === 'facebook' || id === 'facebook-group' || id === 'instagram' || id === 'instagram-channel' || id === 'youtube' || id === 'blogger' || id === 'x-twitter' || id === 'linkedin') ? (
             <div className="max-w-xs mx-auto">
               <button
                 onClick={handleConnectOAuth2}
@@ -500,7 +504,7 @@ export function ChannelDetailPage() {
                   {id === 'youtube' || id === 'blogger' ? 'Connect Google Credentials' : 
                    id === 'x-twitter' ? 'Connect X Credentials' :
                    id === 'linkedin' ? 'Connect LinkedIn Credentials' :
-                   'Connect Meta Credentials'}
+                   'Connect Authorization'}
                 </span>
               </button>
             </div>
@@ -511,7 +515,7 @@ export function ChannelDetailPage() {
                 <span>Manual Token Setup Required</span>
               </div>
               <p className="text-[11px] text-slate-500 leading-relaxed font-normal">
-                This channel operates via secure server-side environment variables. Please configure your API tokens (e.g. `X_API_KEY`, `TELEGRAM_BOT_TOKEN`, etc.) in the dashboard settings to activate this layout simulator.
+                This channel operates via secure server-side environment variables. Please configure your API tokens (e.g. `WHATSAPP_ACCESS_TOKEN`, `TELEGRAM_BOT_TOKEN`, etc.) in the dashboard settings to activate this layout simulator.
               </p>
             </div>
           )}
@@ -525,25 +529,11 @@ export function ChannelDetailPage() {
                 <FolderOpen className="h-3.5 w-3.5 text-indigo-900" />
                 <span>{channelMeta.name} Layout Mockup</span>
               </div>
-
-              {/* Layout Variations for specific channels */}
-              {id === 'facebook' && (
-                <div className="inline-flex rounded-xl bg-slate-100 p-1 border border-slate-200 shadow-2xs">
-                  <button onClick={() => setMetaSubChannel('page')} className={`inline-flex items-center gap-1 px-3 py-1 text-[11px] font-bold rounded-lg transition-colors cursor-pointer ${metaSubChannel === 'page' ? 'bg-white text-indigo-950 shadow-3xs' : 'text-slate-500 hover:text-slate-900'}`}>
-                    <Globe className="h-3 w-3" />
-                    <span>Page Feed</span>
-                  </button>
-                  <button onClick={() => setMetaSubChannel('group')} className={`inline-flex items-center gap-1 px-3 py-1 text-[11px] font-bold rounded-lg transition-colors cursor-pointer ${metaSubChannel === 'group' ? 'bg-white text-indigo-950 shadow-3xs' : 'text-slate-500 hover:text-slate-900'}`}>
-                    <Users className="h-3 w-3" />
-                    <span>Group</span>
-                  </button>
-                </div>
-              )}
             </div>
 
             {/* --- LAYOUTS START --- */}
 
-            {/* 1. INSTAGRAM */}
+            {/* 1. INSTAGRAM FEED */}
             {id === 'instagram' && (
               <div className="rounded-3xl border border-slate-200 bg-white shadow-md overflow-hidden">
                 <div className="p-4 flex items-center justify-between border-b border-slate-100">
@@ -568,8 +558,8 @@ export function ChannelDetailPage() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
                       <button onClick={handleLike} className="active:scale-125 transition-transform cursor-pointer"><Heart className={`h-6 w-6 ${hasLiked ? 'text-rose-500 fill-rose-500' : 'text-slate-700'}`} /></button>
-                      <button onClick={() => setShowComments(!showComments)}><MessageCircle className="h-6 w-6 text-slate-700" /></button>
-                      <button onClick={handleRepost}><Share2 className={`h-6 w-6 ${hasReposted ? 'text-indigo-600' : 'text-slate-700'}`} /></button>
+                      <button onClick={() => setShowComments(!showComments)} className="cursor-pointer"><MessageCircle className="h-6 w-6 text-slate-700" /></button>
+                      <button onClick={handleRepost} className="cursor-pointer"><Share2 className={`h-6 w-6 ${hasReposted ? 'text-indigo-600' : 'text-slate-700'}`} /></button>
                     </div>
                     <Bookmark className="h-6 w-6 text-slate-700" />
                   </div>
@@ -582,11 +572,44 @@ export function ChannelDetailPage() {
               </div>
             )}
 
+            {/* 1b. INSTAGRAM BROADCAST CHANNEL */}
+            {id === 'instagram-channel' && (
+              <div className="rounded-3xl border border-slate-200 bg-white shadow-md overflow-hidden max-w-sm mx-auto">
+                <div className="bg-slate-50 p-4 border-b border-slate-100 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full bg-linear-to-tr from-yellow-400 via-pink-500 to-purple-600 p-[2px]">
+                      <div className="h-full w-full rounded-full bg-white p-[2px]">
+                         <img src={selectedPost.author?.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'} className="h-full w-full rounded-full object-cover" alt="Author" />
+                      </div>
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-bold text-slate-900">Chronicle Insiders</h4>
+                      <p className="text-[10px] text-slate-400">14.2K members</p>
+                    </div>
+                  </div>
+                  <Info className="h-5 w-5 text-slate-400" />
+                </div>
+                <div className="p-4 space-y-4 bg-slate-50/30 min-h-[400px] flex flex-col justify-end">
+                  <div className="bg-white rounded-2xl rounded-bl-none p-3 shadow-sm max-w-[85%] self-start border border-slate-100">
+                    <p className="text-xs text-slate-800 leading-relaxed">Hey everyone! Just dropped a new architectural deep-dive.</p>
+                  </div>
+                  <div className="bg-white rounded-2xl rounded-bl-none overflow-hidden shadow-sm max-w-[85%] self-start border border-slate-100">
+                    <img src={selectedPost.featuredImage} className="w-full h-40 object-cover" alt="Broadcast" />
+                    <div className="p-3 bg-slate-50/50">
+                      <h5 className="text-[11px] font-bold text-slate-900 line-clamp-1">{selectedPost.title}</h5>
+                      <p className="text-[10px] text-slate-500 mt-0.5 line-clamp-2">{selectedPost.excerpt}</p>
+                    </div>
+                  </div>
+                  <div className="text-center pt-4"><button className="px-6 py-2 rounded-full bg-blue-600 text-white text-xs font-bold shadow-md cursor-pointer">Join Channel</button></div>
+                </div>
+              </div>
+            )}
+
             {/* 2. FACEBOOK PAGE */}
-            {id === 'facebook' && metaSubChannel === 'page' && (
+            {id === 'facebook' && (
               <div className="rounded-3xl border border-slate-200 bg-white shadow-md overflow-hidden">
                 <div className="p-4 flex items-start gap-2.5">
-                  <img src={selectedPost.author?.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'} alt="Author Avatar" className="h-9 w-9 rounded-full object-cover" />
+                  <img src={selectedPost.author?.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'} alt="Author" className="h-9 w-9 rounded-full object-cover" />
                   <div className="flex-1">
                     <h4 className="text-xs font-bold text-slate-900 flex items-center gap-1">Chronicle Press <CheckCircle className="h-3 w-3 text-blue-500 fill-blue-500" /></h4>
                     <span className="text-[10px] text-slate-400">Sponsored • RSS Dispatch</span>
@@ -595,16 +618,39 @@ export function ChannelDetailPage() {
                 </div>
                 <p className="px-4 pb-3 text-xs text-slate-800 leading-relaxed">{selectedPost.excerpt}</p>
                 <div className="border-y border-slate-100 bg-slate-50 cursor-pointer">
-                  <img src={selectedPost.featuredImage} alt="Post Cover" className="w-full h-48 object-cover" />
+                  <img src={selectedPost.featuredImage} alt="Post" className="w-full h-48 object-cover" />
                   <div className="p-3">
                     <span className="text-[9px] uppercase font-bold text-slate-400 tracking-wider">CHRONICLE.PRESS</span>
                     <h5 className="text-xs font-bold text-slate-900 mt-0.5">{selectedPost.title}</h5>
                   </div>
                 </div>
                 <div className="px-4 py-2 flex items-center justify-around border-b border-slate-100 text-xs font-semibold text-slate-500">
-                  <button onClick={handleLike} className={`flex items-center gap-1.5 py-1.5 px-3 rounded-lg hover:bg-slate-50 ${hasLiked ? 'text-blue-600' : ''}`}><ThumbsUp className="h-4 w-4" /> <span>Like</span></button>
-                  <button onClick={() => setShowComments(!showComments)} className="flex items-center gap-1.5 py-1.5 px-3 rounded-lg hover:bg-slate-50"><MessageSquare className="h-4 w-4" /> <span>Comment</span></button>
-                  <button onClick={handleRepost} className={`flex items-center gap-1.5 py-1.5 px-3 rounded-lg hover:bg-slate-50 ${hasReposted ? 'text-indigo-600' : ''}`}><Share2 className="h-4 w-4" /> <span>Share</span></button>
+                  <button onClick={handleLike} className={`flex items-center gap-1.5 py-1.5 px-3 rounded-lg hover:bg-slate-50 cursor-pointer ${hasLiked ? 'text-blue-600' : ''}`}><ThumbsUp className="h-4 w-4" /> <span>Like</span></button>
+                  <button onClick={() => setShowComments(!showComments)} className="flex items-center gap-1.5 py-1.5 px-3 rounded-lg hover:bg-slate-50 cursor-pointer"><MessageSquare className="h-4 w-4" /> <span>Comment</span></button>
+                  <button onClick={handleRepost} className={`flex items-center gap-1.5 py-1.5 px-3 rounded-lg hover:bg-slate-50 cursor-pointer ${hasReposted ? 'text-indigo-600' : ''}`}><Share2 className="h-4 w-4" /> <span>Share</span></button>
+                </div>
+              </div>
+            )}
+
+            {/* 2b. FACEBOOK GROUP */}
+            {id === 'facebook-group' && (
+              <div className="rounded-3xl border border-slate-200 bg-white shadow-md overflow-hidden">
+                <div className="bg-slate-100 p-4 flex items-center justify-between border-b border-slate-200">
+                  <div className="flex items-center gap-2 text-xs font-bold text-slate-900"><Users className="h-4 w-4 text-indigo-900" /> <span>Modern Architectural Dispatches</span></div>
+                  <div className="px-2 py-0.5 rounded-md bg-white border border-slate-200 text-[9px] font-bold uppercase text-slate-500">Member Group</div>
+                </div>
+                <div className="p-4 flex items-start gap-2.5">
+                  <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" alt="Admin" className="h-10 w-10 rounded-full object-cover border-2 border-indigo-900" />
+                  <div className="flex-1">
+                    <h4 className="text-xs font-bold text-slate-900 flex items-center gap-1">Julian Thorne <span className="text-[8px] bg-indigo-900 text-white px-1 rounded uppercase">Admin</span></h4>
+                    <span className="text-[10px] text-slate-400">Published via Chronicle Bot • 1h</span>
+                  </div>
+                </div>
+                <p className="px-4 pb-4 text-sm text-slate-800 leading-relaxed"><b>Discussion Topic:</b> {selectedPost.title}<br/><br/>{selectedPost.excerpt}</p>
+                <div className="px-4 pb-4"><img src={selectedPost.featuredImage} className="w-full h-56 rounded-2xl object-cover shadow-sm" alt="Post" /></div>
+                <div className="px-4 py-2 flex items-center justify-between border-t border-slate-100 text-xs text-slate-500">
+                   <div className="flex items-center gap-1.5"><ThumbsUp className="h-3 w-3 text-blue-600" /> <span>{likes + 45} engagement</span></div>
+                   <span>{comments.length} comments</span>
                 </div>
               </div>
             )}
@@ -625,7 +671,7 @@ export function ChannelDetailPage() {
                   Thrilled to share our latest architectural deep-dive: <strong>{selectedPost.title}</strong>. Exploring how silence and minimalism redefine the modern urban experience.
                 </p>
                 <div className="rounded-xl border border-slate-100 overflow-hidden bg-slate-50 cursor-pointer">
-                  <img src={selectedPost.featuredImage} alt="LinkedIn Attachment" className="w-full h-44 object-cover" />
+                  <img src={selectedPost.featuredImage} className="w-full h-44 object-cover" alt="LinkedIn" />
                   <div className="p-3"><h5 className="text-xs font-bold text-slate-900 leading-tight">{selectedPost.title} — Chronicle Press</h5><span className="text-[10px] text-slate-500">chronicle.press • 8 min read</span></div>
                 </div>
                 <div className="flex items-center gap-1 text-[10px] text-slate-400 border-b border-slate-100 pb-2.5">
@@ -633,10 +679,10 @@ export function ChannelDetailPage() {
                   <span>{likes + 120} • {comments.length} comments</span>
                 </div>
                 <div className="flex items-center justify-between text-xs font-bold text-slate-500 pt-1 px-2">
-                  <button onClick={handleLike} className={`flex items-center gap-1.5 hover:text-blue-600 ${hasLiked ? 'text-blue-600' : ''}`}><ThumbsUp className="h-5 w-5" /> <span>Like</span></button>
-                  <button onClick={() => setShowComments(!showComments)} className="flex items-center gap-1.5 hover:text-blue-600"><MessageSquare className="h-5 w-5" /> <span>Comment</span></button>
-                  <button onClick={handleRepost} className={`flex items-center gap-1.5 hover:text-blue-600 ${hasReposted ? 'text-blue-600' : ''}`}><Repeat className="h-5 w-5" /> <span>Repost</span></button>
-                  <button className="flex items-center gap-1.5 hover:text-blue-600"><Send className="h-5 w-5" /> <span>Send</span></button>
+                  <button onClick={handleLike} className={`flex items-center gap-1.5 hover:text-blue-600 cursor-pointer ${hasLiked ? 'text-blue-600' : ''}`}><ThumbsUp className="h-5 w-5" /> <span>Like</span></button>
+                  <button onClick={() => setShowComments(!showComments)} className="flex items-center gap-1.5 hover:text-blue-600 cursor-pointer"><MessageSquare className="h-5 w-5" /> <span>Comment</span></button>
+                  <button onClick={handleRepost} className={`flex items-center gap-1.5 hover:text-blue-600 cursor-pointer ${hasReposted ? 'text-blue-600' : ''}`}><Repeat className="h-5 w-5" /> <span>Repost</span></button>
+                  <button className="flex items-center gap-1.5 hover:text-blue-600 cursor-pointer"><Send className="h-5 w-5" /> <span>Send</span></button>
                 </div>
               </div>
             )}
@@ -653,7 +699,7 @@ export function ChannelDetailPage() {
                 </div>
                 <div className="p-4 space-y-4 max-w-[85%]">
                   <div className="bg-white rounded-2xl rounded-tl-none p-3 shadow-sm space-y-2.5 border border-slate-100 relative">
-                    <div className="rounded-xl overflow-hidden cursor-pointer"><img src={selectedPost.featuredImage} alt="Telegram Post" className="w-full h-40 object-cover" /></div>
+                    <div className="rounded-xl overflow-hidden cursor-pointer"><img src={selectedPost.featuredImage} className="w-full h-40 object-cover" alt="Telegram" /></div>
                     <p className="text-xs text-slate-800 leading-relaxed">
                       🏛 <b>{selectedPost.title}</b><br/><br/>{selectedPost.excerpt}<br/><br/>
                       <a href="#" className="text-sky-600 font-bold hover:underline">Read complete essay on Chronicle →</a>
@@ -661,10 +707,40 @@ export function ChannelDetailPage() {
                     <div className="flex items-center justify-end gap-1.5 text-[9px] text-slate-400 font-medium"><span>14:02</span> <CheckCircle className="h-3 w-3" /></div>
                   </div>
                   <div className="flex items-center gap-4 text-xs font-bold text-slate-500 ml-2">
-                    <button onClick={handleLike} className={`flex items-center gap-1 hover:text-rose-500 transition-colors ${hasLiked ? 'text-rose-500' : ''}`}><Heart className={`h-4 w-4 ${hasLiked ? 'fill-rose-500' : ''}`} /> <span>{likes}</span></button>
-                    <button onClick={() => setShowComments(!showComments)} className="flex items-center gap-1 hover:text-sky-600 transition-colors"><MessageCircle className="h-4 w-4" /> <span>{comments.length}</span></button>
-                    <button onClick={handleRepost} className={`flex items-center gap-1 hover:text-sky-600 transition-colors ${hasReposted ? 'text-sky-600' : ''}`}><Share2 className="h-4 w-4" /> <span>Share</span></button>
+                    <button onClick={handleLike} className={`flex items-center gap-1 hover:text-rose-500 transition-colors cursor-pointer ${hasLiked ? 'text-rose-500' : ''}`}><Heart className={`h-4 w-4 ${hasLiked ? 'fill-rose-500' : ''}`} /> <span>{likes}</span></button>
+                    <button onClick={() => setShowComments(!showComments)} className="flex items-center gap-1 hover:text-sky-600 transition-colors cursor-pointer"><MessageCircle className="h-4 w-4" /> <span>{comments.length}</span></button>
+                    <button onClick={handleRepost} className={`flex items-center gap-1 hover:text-sky-600 transition-colors cursor-pointer ${hasReposted ? 'text-sky-600' : ''}`}><Share2 className="h-4 w-4" /> <span>Share</span></button>
                   </div>
+                </div>
+              </div>
+            )}
+
+            {/* 4b. WHATSAPP CHANNEL */}
+            {id === 'whatsapp-channel' && (
+              <div className="rounded-3xl border border-slate-200 bg-[#e5ddd5] shadow-md overflow-hidden max-w-sm mx-auto">
+                <div className="bg-[#075e54] p-4 flex items-center justify-between text-white">
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full bg-emerald-100 flex items-center justify-center text-[#075e54] font-bold">C</div>
+                    <div>
+                      <h4 className="text-sm font-bold">Chronicle Official Channel</h4>
+                      <p className="text-[10px] opacity-80">8.2M followers</p>
+                    </div>
+                  </div>
+                  <CheckCircle2 className="h-5 w-5 text-sky-400 fill-white" />
+                </div>
+                <div className="p-4 space-y-4 min-h-[400px] flex flex-col justify-end bg-[url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png')] bg-repeat">
+                   <div className="bg-white rounded-xl shadow-sm overflow-hidden self-center max-w-[90%] border border-slate-100">
+                     <img src={selectedPost.featuredImage} className="w-full h-44 object-cover" alt="WhatsApp" />
+                     <div className="p-3">
+                       <h5 className="text-xs font-bold text-slate-900 line-clamp-2">{selectedPost.title}</h5>
+                       <p className="text-[10px] text-slate-500 mt-1 line-clamp-3 leading-relaxed">{selectedPost.excerpt}</p>
+                       <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-2">
+                         <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Chronicle Press</span>
+                         <span className="text-[9px] text-slate-400">12:45 PM</span>
+                       </div>
+                     </div>
+                   </div>
+                   <div className="text-center pb-2"><button className="px-8 py-2.5 rounded-full bg-[#25d366] text-white text-xs font-bold shadow-lg uppercase tracking-wide cursor-pointer">Follow Channel</button></div>
                 </div>
               </div>
             )}
@@ -679,16 +755,16 @@ export function ChannelDetailPage() {
                 </div>
                 <div className="p-6 space-y-5">
                   <div className="space-y-2"><h2 className="text-xl font-bold text-slate-900 font-serif leading-tight">{selectedPost.title}</h2><p className="text-xs text-slate-500">BY JULIAN THORNE • {new Date().toLocaleDateString()}</p></div>
-                  <img src={selectedPost.featuredImage} alt="Substack Cover" className="w-full h-56 rounded-xl object-cover" />
+                  <img src={selectedPost.featuredImage} alt="Substack" className="w-full h-56 rounded-xl object-cover" />
                   <p className="text-sm text-slate-800 leading-relaxed font-serif">{selectedPost.excerpt}...</p>
-                  <button className="w-full py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-xl text-xs font-bold shadow-md transition-all">Read on Substack</button>
+                  <button className="w-full py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-xl text-xs font-bold shadow-md transition-all cursor-pointer">Read on Substack</button>
                 </div>
                 <div className="p-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
                   <div className="flex items-center gap-5">
-                    <button onClick={handleLike} className={`flex items-center gap-1.5 hover:text-orange-600 font-bold ${hasLiked ? 'text-orange-600' : ''}`}><Heart className={`h-5 w-5 ${hasLiked ? 'fill-orange-600' : ''}`} /> <span>{likes}</span></button>
-                    <button onClick={() => setShowComments(!showComments)} className="flex items-center gap-1.5 hover:text-orange-600 font-bold"><MessageCircle className="h-5 w-5" /> <span>{comments.length}</span></button>
+                    <button onClick={handleLike} className={`flex items-center gap-1.5 hover:text-orange-600 font-bold cursor-pointer ${hasLiked ? 'text-orange-600' : ''}`}><Heart className={`h-5 w-5 ${hasLiked ? 'fill-orange-600' : ''}`} /> <span>{likes}</span></button>
+                    <button onClick={() => setShowComments(!showComments)} className="flex items-center gap-1.5 hover:text-orange-600 font-bold cursor-pointer"><MessageCircle className="h-5 w-5" /> <span>{comments.length}</span></button>
                   </div>
-                  <button onClick={handleRepost} className={`hover:text-orange-600 font-bold ${hasReposted ? 'text-orange-600' : ''}`}><Share2 className="h-5 w-5" /></button>
+                  <button onClick={handleRepost} className={`hover:text-orange-600 font-bold cursor-pointer ${hasReposted ? 'text-orange-600' : ''}`}><Share2 className="h-5 w-5" /></button>
                 </div>
               </div>
             )}
@@ -697,7 +773,7 @@ export function ChannelDetailPage() {
             {id === 'youtube' && (
               <div className="rounded-3xl border border-slate-200 bg-white shadow-md overflow-hidden">
                 <div className="aspect-video bg-black relative flex items-center justify-center">
-                  <img src={selectedPost.featuredImage} alt="Video Preview" className="absolute inset-0 w-full h-full object-cover opacity-60 grayscale-[0.3]" />
+                  <img src={selectedPost.featuredImage} alt="Video" className="absolute inset-0 w-full h-full object-cover opacity-60 grayscale-[0.3]" />
                   <div className="relative z-10 w-16 h-16 bg-red-600 rounded-full flex items-center justify-center shadow-lg cursor-pointer hover:scale-110 transition-transform"><Flame className="h-8 w-8 text-white fill-white" /></div>
                   <div className="absolute bottom-0 left-0 right-0 h-1 bg-red-600 w-1/3" />
                 </div>
@@ -705,15 +781,15 @@ export function ChannelDetailPage() {
                   <h4 className="text-sm font-bold text-slate-900 leading-tight line-clamp-2">{selectedPost.title} — Architectural Narrative</h4>
                   <div className="flex items-center justify-between gap-4">
                     <div className="flex items-center gap-2.5">
-                      <div className="h-9 w-9 rounded-full bg-slate-200 border border-slate-100 overflow-hidden"><img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" alt="Channel Avatar" className="h-full w-full object-cover" /></div>
+                      <div className="h-9 w-9 rounded-full bg-slate-200 border border-slate-100 overflow-hidden"><img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" className="h-full w-full object-cover" alt="Channel" /></div>
                       <div><div className="text-xs font-bold text-slate-900 flex items-center gap-1">Chronicle Official <CheckCircle2 className="h-3 w-3 text-slate-500" /></div><div className="text-[10px] text-slate-400">142K subscribers</div></div>
                     </div>
-                    <button className="bg-slate-900 text-white px-4 py-2 rounded-full text-[11px] font-bold hover:bg-slate-800 transition-colors">Subscribe</button>
+                    <button className="bg-slate-900 text-white px-4 py-2 rounded-full text-[11px] font-bold hover:bg-slate-800 transition-colors cursor-pointer">Subscribe</button>
                   </div>
                   <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
-                    <div className="flex items-center bg-slate-100 rounded-full overflow-hidden shrink-0"><button onClick={handleLike} className={`flex items-center gap-1.5 px-3 py-1.5 border-r border-slate-200 hover:bg-slate-200 transition-colors ${hasLiked ? 'text-indigo-900' : ''}`}><ThumbsUp className={`h-4 w-4 ${hasLiked ? 'fill-indigo-950' : ''}`} /> <span className="text-[10px] font-bold">{likes}</span></button><button className="px-3 py-1.5 hover:bg-slate-200 transition-colors"><Repeat className="h-4 w-4 rotate-180 text-slate-400" /></button></div>
-                    <button onClick={handleRepost} className={`flex items-center gap-1.5 bg-slate-100 px-3 py-1.5 rounded-full font-bold text-[10px] hover:bg-slate-200 shrink-0 ${hasReposted ? 'text-indigo-900 bg-indigo-50 border border-indigo-100' : ''}`}><Share2 className="h-4 w-4" /> <span>Share</span></button>
-                    <button className="flex items-center gap-1.5 bg-slate-100 px-3 py-1.5 rounded-full font-bold text-[10px] hover:bg-slate-200 shrink-0"><Cpu className="h-4 w-4" /> <span>Remix</span></button>
+                    <div className="flex items-center bg-slate-100 rounded-full overflow-hidden shrink-0"><button onClick={handleLike} className={`flex items-center gap-1.5 px-3 py-1.5 border-r border-slate-200 hover:bg-slate-200 transition-colors cursor-pointer ${hasLiked ? 'text-indigo-900' : ''}`}><ThumbsUp className={`h-4 w-4 ${hasLiked ? 'fill-indigo-950' : ''}`} /> <span className="text-[10px] font-bold">{likes}</span></button><button className="px-3 py-1.5 hover:bg-slate-200 transition-colors cursor-pointer"><Repeat className="h-4 w-4 rotate-180 text-slate-400" /></button></div>
+                    <button onClick={handleRepost} className={`flex items-center gap-1.5 bg-slate-100 px-3 py-1.5 rounded-full font-bold text-[10px] hover:bg-slate-200 shrink-0 cursor-pointer ${hasReposted ? 'text-indigo-900 bg-indigo-50 border border-indigo-100' : ''}`}><Share2 className="h-4 w-4" /> <span>Share</span></button>
+                    <button className="flex items-center gap-1.5 bg-slate-100 px-3 py-1.5 rounded-full font-bold text-[10px] hover:bg-slate-200 shrink-0 cursor-pointer"><Cpu className="h-4 w-4" /> <span>Remix</span></button>
                   </div>
                   <div className="bg-slate-100/80 rounded-xl p-3 text-[11px] text-slate-800 font-medium leading-relaxed">
                     <b>{selectedPost.views.toLocaleString()} views • 2 hours ago</b><br/>{selectedPost.excerpt} <span className="text-slate-500">...more</span>
@@ -730,34 +806,34 @@ export function ChannelDetailPage() {
                   <div className="flex items-center gap-2"><div className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-700 text-[9px] font-bold uppercase">Published</div><ExternalLink className="h-4 w-4 text-slate-400 cursor-pointer" /></div>
                 </div>
                 <div className="p-8 space-y-6 max-w-2xl mx-auto">
-                  <div className="space-y-3"><h1 className="text-2xl font-bold text-slate-900 font-serif leading-tight">{selectedPost.title}</h1><div className="flex items-center gap-3 text-xs text-slate-500 font-medium pb-2 border-b border-slate-100"><img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" alt="CMS Author" className="h-6 w-6 rounded-full" /> <span>By Julian Thorne</span> <span>•</span> <span>6 min read</span></div></div>
-                  <img src={selectedPost.featuredImage} alt="CMS Post Header" className="w-full h-64 rounded-2xl object-cover shadow-sm" />
+                  <div className="space-y-3"><h1 className="text-2xl font-bold text-slate-900 font-serif leading-tight">{selectedPost.title}</h1><div className="flex items-center gap-3 text-xs text-slate-500 font-medium pb-2 border-b border-slate-100"><img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" className="h-6 w-6 rounded-full" alt="Author" /> <span>By Julian Thorne</span> <span>•</span> <span>6 min read</span></div></div>
+                  <img src={selectedPost.featuredImage} alt="Cover" className="w-full h-64 rounded-2xl object-cover shadow-sm" />
                   <div className="prose prose-slate max-w-none"><p className="text-base text-slate-700 leading-relaxed font-serif first-letter:text-4xl first-letter:font-bold first-letter:text-slate-900 first-letter:mr-1 first-letter:float-left">{selectedPost.content.substring(0, 350)}...</p></div>
                 </div>
                 <div className="p-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
                   <div className="flex items-center gap-4 text-xs font-bold text-slate-500">
-                    <button onClick={handleLike} className={`flex items-center gap-1.5 hover:text-indigo-900 ${hasLiked ? 'text-indigo-900' : ''}`}><Heart className="h-4 w-4" /> <span>{likes}</span></button>
-                    <button onClick={() => setShowComments(!showComments)} className="flex items-center gap-1.5 hover:text-indigo-900"><MessageSquare className="h-4 w-4" /> <span>{comments.length} Comments</span></button>
+                    <button onClick={handleLike} className={`flex items-center gap-1.5 hover:text-indigo-900 cursor-pointer ${hasLiked ? 'text-indigo-900' : ''}`}><Heart className="h-4 w-4" /> <span>{likes}</span></button>
+                    <button onClick={() => setShowComments(!showComments)} className="flex items-center gap-1.5 hover:text-indigo-900 cursor-pointer"><MessageSquare className="h-4 w-4" /> <span>{comments.length} Comments</span></button>
                   </div>
-                  <button onClick={handleRepost} className={`text-slate-500 hover:text-indigo-900 ${hasReposted ? 'text-indigo-900' : ''}`}><Share2 className="h-5 w-5" /></button>
+                  <button onClick={handleRepost} className={`text-slate-500 hover:text-indigo-900 cursor-pointer ${hasReposted ? 'text-indigo-900' : ''}`}><Share2 className="h-5 w-5" /></button>
                 </div>
               </div>
             )}
 
             {/* 8. BLOGGER / DEFAULT FALLBACK */}
-            {(id === 'blogger' || (id !== 'instagram' && id !== 'facebook' && id !== 'linkedin' && id !== 'telegram' && id !== 'substack' && id !== 'youtube' && id !== 'wordpress' && id !== 'ghost' && id !== 'x-twitter')) && (
+            {(id === 'blogger' || (id !== 'instagram' && id !== 'instagram-channel' && id !== 'facebook' && id !== 'facebook-group' && id !== 'linkedin' && id !== 'telegram' && id !== 'whatsapp-channel' && id !== 'substack' && id !== 'youtube' && id !== 'wordpress' && id !== 'ghost' && id !== 'x-twitter')) && (
                <div className="rounded-3xl border border-slate-200 bg-white shadow-md overflow-hidden">
                  <div className="bg-amber-600 p-3 flex items-center gap-2"><div className="w-8 h-8 bg-white rounded-md flex items-center justify-center font-bold text-amber-600 text-xl">B</div><h4 className="text-white text-xs font-bold uppercase tracking-widest tracking-widest">Blogger Platform</h4></div>
                  <div className="p-6 space-y-4">
                    <h2 className="text-xl font-bold text-slate-900 leading-tight border-b border-slate-100 pb-3">{selectedPost.title}</h2>
-                   <div className="aspect-video rounded-xl overflow-hidden shadow-xs"><img src={selectedPost.featuredImage} alt="Blogger Post Image" className="w-full h-full object-cover" /></div>
+                   <div className="aspect-video rounded-xl overflow-hidden shadow-xs"><img src={selectedPost.featuredImage} className="w-full h-full object-cover" alt="Blogger" /></div>
                    <p className="text-sm text-slate-700 leading-relaxed">{selectedPost.excerpt}</p>
                    <div className="flex items-center justify-between pt-2">
                      <div className="flex items-center gap-4">
-                        <button onClick={handleLike} className={`text-xs font-bold flex items-center gap-1 hover:text-amber-700 ${hasLiked ? 'text-amber-700' : 'text-slate-500'}`}><ThumbsUp className="h-4 w-4" /> <span>Like</span></button>
-                        <button onClick={() => setShowComments(!showComments)} className="text-xs font-bold flex items-center gap-1 text-slate-500 hover:text-amber-700"><MessageCircle className="h-4 w-4" /> <span>{comments.length}</span></button>
+                        <button onClick={handleLike} className={`text-xs font-bold flex items-center gap-1 hover:text-amber-700 cursor-pointer ${hasLiked ? 'text-amber-700' : 'text-slate-500'}`}><ThumbsUp className="h-4 w-4" /> <span>Like</span></button>
+                        <button onClick={() => setShowComments(!showComments)} className="text-xs font-bold flex items-center gap-1 text-slate-500 hover:text-amber-700 cursor-pointer"><MessageCircle className="h-4 w-4" /> <span>{comments.length}</span></button>
                      </div>
-                     <button onClick={handleRepost} className={`text-slate-500 hover:text-amber-700 ${hasReposted ? 'text-amber-700' : ''}`}><Share2 className="h-4 w-4" /></button>
+                     <button onClick={handleRepost} className={`text-slate-500 hover:text-amber-700 cursor-pointer ${hasReposted ? 'text-amber-700' : ''}`}><Share2 className="h-4 w-4" /></button>
                    </div>
                  </div>
                </div>
@@ -768,7 +844,7 @@ export function ChannelDetailPage() {
               <div className="rounded-3xl border border-slate-200 bg-white shadow-md p-5 space-y-4">
                 <div className="flex items-start justify-between">
                   <div className="flex gap-2.5">
-                    <img src={selectedPost.author?.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'} alt="Twitter Profile" className="h-10 w-10 rounded-full object-cover shrink-0" />
+                    <img src={selectedPost.author?.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'} alt="Profile" className="h-10 w-10 rounded-full object-cover shrink-0" />
                     <div>
                       <h4 className="text-xs font-bold text-slate-900 flex items-center gap-0.5">Chronicle Press <CheckCircle className="h-3.5 w-3.5 text-blue-500 fill-blue-500" /></h4>
                       <span className="text-[10px] text-slate-400">@chronicle_press • 2h</span>
@@ -777,11 +853,11 @@ export function ChannelDetailPage() {
                   <MoreHorizontal className="h-5 w-5 text-slate-400" />
                 </div>
                 <p className="text-xs sm:text-sm text-slate-800 leading-relaxed"><b>{selectedPost.title}</b> — {selectedPost.excerpt} <span className="text-indigo-600 block hover:underline cursor-pointer">chronicle.press/articles/{selectedPost.slug}</span></p>
-                <div className="rounded-2xl border border-slate-100 overflow-hidden"><img src={selectedPost.featuredImage} alt="Twitter Card" className="w-full h-44 object-cover" /></div>
+                <div className="rounded-2xl border border-slate-100 overflow-hidden"><img src={selectedPost.featuredImage} alt="X Card" className="w-full h-44 object-cover" /></div>
                 <div className="flex items-center justify-between border-t border-slate-100 pt-3 text-slate-500 text-xs">
-                  <button onClick={() => setShowComments(!showComments)} className="flex items-center gap-1.5 hover:text-blue-500"><MessageCircle className="h-4.5 w-4.5" /> <span>{comments.length}</span></button>
-                  <button onClick={handleRepost} className={`flex items-center gap-1.5 hover:text-emerald-500 ${hasReposted ? 'text-emerald-500' : ''}`}><Repeat className="h-4.5 w-4.5" /> <span>{reposts}</span></button>
-                  <button onClick={handleLike} className={`flex items-center gap-1.5 hover:text-rose-500 ${hasLiked ? 'text-rose-500' : ''}`}><Heart className={`h-4.5 w-4.5 ${hasLiked ? 'fill-rose-500' : ''}`} /> <span>{likes}</span></button>
+                  <button onClick={() => setShowComments(!showComments)} className="flex items-center gap-1.5 hover:text-blue-500 cursor-pointer"><MessageCircle className="h-4.5 w-4.5" /> <span>{comments.length}</span></button>
+                  <button onClick={handleRepost} className={`flex items-center gap-1.5 hover:text-emerald-500 cursor-pointer ${hasReposted ? 'text-emerald-500' : ''}`}><Repeat className="h-4.5 w-4.5" /> <span>{reposts}</span></button>
+                  <button onClick={handleLike} className={`flex items-center gap-1.5 hover:text-rose-500 cursor-pointer ${hasLiked ? 'text-rose-500' : ''}`}><Heart className={`h-4.5 w-4.5 ${hasLiked ? 'fill-rose-500' : ''}`} /> <span>{likes}</span></button>
                   <Bookmark className="h-4.5 w-4.5 hover:text-blue-500" />
                 </div>
               </div>
@@ -792,7 +868,7 @@ export function ChannelDetailPage() {
           <div className="lg:col-span-5 space-y-6">
             
             {/* OAuth2 Connection Prompt */}
-            {(id === 'facebook' || id === 'instagram' || id === 'youtube' || id === 'blogger' || id === 'x-twitter' || id === 'linkedin') && (
+            {(id === 'facebook' || id === 'facebook-group' || id === 'instagram' || id === 'instagram-channel' || id === 'youtube' || id === 'blogger' || id === 'x-twitter' || id === 'linkedin') && (
               <div className="rounded-3xl border border-indigo-200 bg-indigo-50/50 p-6 space-y-4 shadow-sm">
                 <div className="flex items-start gap-3">
                   <div className="p-2 bg-indigo-100 rounded-xl text-indigo-950 shrink-0"><KeyRound className="h-5 w-5" /></div>
@@ -819,7 +895,7 @@ export function ChannelDetailPage() {
                         {id === 'youtube' || id === 'blogger' ? 'Connect Google Credentials' : 
                          id === 'x-twitter' ? 'Connect X Credentials' :
                          id === 'linkedin' ? 'Connect LinkedIn Credentials' :
-                         'Connect Meta Credentials'}
+                         'Connect Authorization'}
                       </span>
                     </button>
                   )}

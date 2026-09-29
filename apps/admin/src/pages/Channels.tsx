@@ -43,26 +43,59 @@ interface Channel {
 
 const CHANNELS_DATA: Channel[] = [
   {
+    id: 'facebook',
+    name: 'Facebook Pages',
+    category: 'Social Media',
+    description: 'Broadcast updates, photos, and links directly to official Facebook Pages with full engagement tracking.',
+    apiName: 'Facebook Graph API (Pages)',
+    status: 'connected',
+    icon: Facebook,
+    docsUrl: 'https://developers.facebook.com/docs/graph-api',
+    capabilities: ['Page Posts', 'Link Share Cards', 'Comment Sync']
+  },
+  {
+    id: 'facebook-group',
+    name: 'Facebook Groups',
+    category: 'Community & Chat',
+    description: 'Post announcements and moderate discussions in admin-authorized Facebook Groups.',
+    apiName: 'Facebook Groups API',
+    status: 'available',
+    icon: Users,
+    docsUrl: 'https://developers.facebook.com/docs/groups-api',
+    capabilities: ['Group Posts', 'Admin Moderation', 'Member Alerts']
+  },
+  {
     id: 'instagram',
-    name: 'Instagram (Graph API)',
+    name: 'Instagram Feed & Reels',
     category: 'Social Media',
     description: 'Publish single-image posts, carousels, and Reels to professional Creator or Business accounts.',
     apiName: 'Instagram Graph API v19.0',
     status: 'connected',
     icon: Instagram,
     docsUrl: 'https://developers.facebook.com/docs/instagram-api',
-    capabilities: ['Single Images', 'Carousels', 'Reels', 'Captions & Hashtags']
+    capabilities: ['Single Images', 'Carousels', 'Reels', 'Captions']
   },
   {
-    id: 'facebook',
-    name: 'Facebook Pages & Groups',
-    category: 'Social Media',
-    description: 'Broadcast updates, photos, and links directly to Facebook Pages and admin-authorized Groups.',
-    apiName: 'Facebook Graph API',
-    status: 'connected',
-    icon: Facebook,
-    docsUrl: 'https://developers.facebook.com/docs/graph-api',
-    capabilities: ['Page Posts', 'Group Announcements', 'Link Share Cards']
+    id: 'instagram-channel',
+    name: 'Instagram Broadcast Channels',
+    category: 'Community & Chat',
+    description: 'Direct 1-to-many broadcast messaging for your most engaged followers on Instagram.',
+    apiName: 'Instagram Messaging API',
+    status: 'available',
+    icon: Radio,
+    docsUrl: 'https://developers.facebook.com/docs/messenger-platform/instagram-messaging',
+    capabilities: ['Voice Notes', 'Polls', 'Direct Broadcasts']
+  },
+  {
+    id: 'whatsapp-channel',
+    name: 'WhatsApp Channels',
+    category: 'Community & Chat',
+    description: 'Broadcast private updates and article dispatches directly to subscribers on WhatsApp.',
+    apiName: 'WhatsApp Business API',
+    status: 'available',
+    icon: MessageCircle,
+    docsUrl: 'https://developers.facebook.com/docs/whatsapp',
+    capabilities: ['Broadcasting', 'Status Updates', 'Subscriber Analytics']
   },
   {
     id: 'x-twitter',

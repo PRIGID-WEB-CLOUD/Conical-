@@ -7,7 +7,9 @@ const router = Router();
 router.get('/', (_req: Request, res: Response) => {
   const envConfig = {
     instagram: !!(process.env.INSTAGRAM_ACCESS_TOKEN || process.env.INSTAGRAM_USER_ID),
+    'instagram-channel': !!(process.env.INSTAGRAM_CHANNEL_TOKEN),
     facebook: !!(process.env.FACEBOOK_PAGE_ACCESS_TOKEN || process.env.FACEBOOK_PAGE_ID),
+    'facebook-group': !!(process.env.FACEBOOK_GROUP_ACCESS_TOKEN),
     'x-twitter': !!(process.env.X_API_KEY || process.env.X_ACCESS_TOKEN),
     linkedin: !!(process.env.LINKEDIN_OAUTH_TOKEN || process.env.LINKEDIN_ORG_ID),
     wordpress: !!(process.env.WORDPRESS_APP_PASSWORD || process.env.WORDPRESS_SITE_URL),
@@ -16,6 +18,7 @@ router.get('/', (_req: Request, res: Response) => {
     telegram: !!(process.env.TELEGRAM_BOT_TOKEN || process.env.TELEGRAM_CHANNEL_ID),
     youtube: !!(process.env.YOUTUBE_ACCESS_TOKEN || process.env.GOOGLE_OAUTH_TOKEN),
     blogger: !!(process.env.BLOGGER_ACCESS_TOKEN || process.env.GOOGLE_OAUTH_TOKEN),
+    'whatsapp-channel': !!(process.env.WHATSAPP_ACCESS_TOKEN || process.env.WHATSAPP_PHONE_ID),
   };
 
   res.json({ envConfig });
@@ -116,10 +119,12 @@ router.get(['/:channelId/callback', '/:channelId/callback/'], (req: Request, res
   const code = req.query.code as string | undefined;
 
   if (code) {
-    if (channelId === 'instagram') {
+    if (channelId === 'instagram' || channelId === 'instagram-channel') {
       process.env.INSTAGRAM_ACCESS_TOKEN = `oauth_token_${code.substring(0, 15)}`;
-    } else if (channelId === 'facebook') {
+      if (channelId === 'instagram-channel') process.env.INSTAGRAM_CHANNEL_TOKEN = `oauth_token_${code.substring(0, 15)}`;
+    } else if (channelId === 'facebook' || channelId === 'facebook-group') {
       process.env.FACEBOOK_PAGE_ACCESS_TOKEN = `oauth_token_${code.substring(0, 15)}`;
+      if (channelId === 'facebook-group') process.env.FACEBOOK_GROUP_ACCESS_TOKEN = `oauth_token_${code.substring(0, 15)}`;
     } else if (channelId === 'youtube') {
       process.env.YOUTUBE_ACCESS_TOKEN = `oauth_token_${code.substring(0, 15)}`;
       process.env.GOOGLE_OAUTH_TOKEN = `oauth_token_${code.substring(0, 15)}`;
@@ -130,6 +135,8 @@ router.get(['/:channelId/callback', '/:channelId/callback/'], (req: Request, res
       process.env.X_ACCESS_TOKEN = `oauth_token_${code.substring(0, 15)}`;
     } else if (channelId === 'linkedin') {
       process.env.LINKEDIN_OAUTH_TOKEN = `oauth_token_${code.substring(0, 15)}`;
+    } else if (channelId === 'whatsapp-channel') {
+      process.env.WHATSAPP_ACCESS_TOKEN = `oauth_token_${code.substring(0, 15)}`;
     }
   }
 

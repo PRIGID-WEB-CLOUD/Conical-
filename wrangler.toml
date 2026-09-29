@@ -1,0 +1,15 @@
+# Cloudflare Workers configuration for Chronicle API
+name = "chronicle-api"
+main = "apps/server/src/standalone.ts"
+compatibility_date = "2024-03-01"
+node_compat = true
+
+[vars]
+NODE_ENV = "production"
+
+# Deployment configuration for the monorepo structure
+[site]
+bucket = "./apps/readers/dist"
+
+# To deploy the frontends separately to Pages, use the dashboard.
+# This Worker is intended for the /api routes.
