@@ -60,7 +60,10 @@ Cloudflare Workers separates variables into **Plaintext** (in `wrangler.toml`) a
 | **Plaintext** | `NODE_ENV`, `APP_URL`, `INSTAGRAM_USER_ID`, `FACEBOOK_PAGE_ID`, `TELEGRAM_CHANNEL_ID`, `GHOST_ADMIN_URL`, `WORDPRESS_SITE_URL` | Define in `[vars]` block of `wrangler.toml` |
 
 ### Step 3: Configure `wrangler.toml`
-Use the template provided in the root `wrangler.toml`. It includes mappings for all social media and AI integrations.
+Use the template provided in the root `wrangler.toml`. It includes mappings for all social media and AI integrations. Note that as of Wrangler v4, `node_compat = true` is replaced by:
+```toml
+compatibility_flags = [ "nodejs_compat" ]
+```
 
 ### Step 4: Entry Point Adaptation
 Cloudflare Workers use a `fetch` handler. If you are using standard Express, you must use an adapter like `itty-router` or a compatibility layer.
