@@ -30,6 +30,20 @@ export interface Author {
   featuredQuote?: string;
 }
 
+export interface CommentReply {
+  id: string;
+  commentId: string;
+  authorName: string;
+  authorAvatar?: string;
+  initials: string;
+  content: string;
+  createdAt: string;
+  relativeTime: string;
+  likes: number;
+  replyToAuthor?: string;
+  isStaff?: boolean;
+}
+
 export interface Comment {
   id: string;
   postId: string;
@@ -43,6 +57,7 @@ export interface Comment {
   status?: 'approved' | 'pending' | 'flagged';
   reply?: string;
   repliedAt?: string;
+  replies?: CommentReply[];
 }
 
 export interface SubscriberItem {

@@ -1,4 +1,4 @@
-import { Post, Comment, SubscriberItem, PublicationSettings, Author } from '@chronicle/shared';
+import { Post, Comment, CommentReply, SubscriberItem, PublicationSettings, Author } from '@chronicle/shared';
 import { INITIAL_POSTS, INITIAL_COMMENTS, INITIAL_SETTINGS, INITIAL_AUTHORS } from '@chronicle/shared';
 
 const API_BASE = (import.meta as any).env?.VITE_API_URL || '/api';
@@ -80,7 +80,69 @@ export const readerApi = {
         relativeTime: 'Just now',
         likes: 0,
         status: 'approved',
+        replies: [],
       };
+    }
+  },
+
+  async postReply(
+    commentId: string,
+    content: string,
+    authorName: string,
+    replyToAuthor?: string
+  ): Promise<{ reply: CommentReply; comment?: Comment }> {
+    try {
+      const res = await fetch(`${API_BASE}/comments/${commentId}/replies`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content, authorName, replyToAuthor }),
+      });
+      if (!res.ok) throw new Error('Failed to post reply');
+      const data = await res.json();
+      return data;
+    } catch {
+      const fallbackReply: CommentReply = {
+        id: `reply-${Date.now()}`,
+        commentId,
+        authorName,
+        initials: authorName.slice(0, 2).toUpperCase() || 'RM',
+        content,
+        createdAt: new Date().toISOString(),
+        relativeTime: 'Just now',
+        likes: 0,
+        replyToAuthor,
+      };
+      return { reply: fallbackReply };
+    }
+  },
+
+  async toggleCommentLike(commentId: string, decrement: boolean = false): Promise<number | undefined> {
+    try {
+      const res = await fetch(`${API_BASE}/comments/${commentId}/like`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ decrement }),
+      });
+      if (!res.ok) return undefined;
+      const data = await res.json();
+      return data.likes;
+    } catch {
+      return undefined;
+    }
+  },
+
+  async toggleReplyLike(commentId: string, replyId: string, decrement: boolean = false): Promise<number | undefined> {
+    try {
+      const res = await fetch(`${API_BASE}/comments/${commentId}/replies/${replyId}/like`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ decrement }),
+      });
+      if (!res.ok) return undefined;
+      const data = await res.json();
+      return data.likes;
+    } catch {
+      return undefined;
     }
   },
 

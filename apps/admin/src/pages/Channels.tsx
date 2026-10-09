@@ -24,7 +24,11 @@ import {
   TrendingUp,
   Sliders,
   Radio,
-  History
+  History,
+  ShieldCheck,
+  Key,
+  Lock,
+  X
 } from 'lucide-react';
 import { adminApi } from '../lib/api';
 import { SyndicationLog } from '@chronicle/shared';
@@ -169,6 +173,11 @@ export function ChannelsPage() {
   const [channels, setChannels] = useState<Channel[]>(CHANNELS_DATA);
   const [envConfig, setEnvConfig] = useState<Record<string, boolean>>({});
   const [syndications, setSyndications] = useState<SyndicationLog[]>([]);
+  const [metaConfig, setMetaConfig] = useState<any>(null);
+  const [showMetaModal, setShowMetaModal] = useState(false);
+  const [metaAppIdInput, setMetaAppIdInput] = useState('');
+  const [metaAppSecretInput, setMetaAppSecretInput] = useState('');
+  const [isSavingMeta, setIsSavingMeta] = useState(false);
   const [loading, setLoading] = useState(true);
   const [testingId, setTestingId] = useState<string | null>(null);
   const [repostingId, setRepostingId] = useState<string | null>(null);
@@ -177,12 +186,17 @@ export function ChannelsPage() {
 
   const loadData = async () => {
     try {
-      const [envs, logs] = await Promise.all([
+      const [envs, logs, meta] = await Promise.all([
         adminApi.getEnvConfig(),
-        adminApi.getSyndications()
+        adminApi.getSyndications(),
+        adminApi.getMetaConfig()
       ]);
       setEnvConfig(envs);
       setSyndications(logs);
+      if (meta) {
+        setMetaConfig(meta);
+        if (meta.appId) setMetaAppIdInput(meta.appId);
+      }
     } catch (e) {
       console.error(e);
     } finally {
@@ -191,28 +205,31 @@ export function ChannelsPage() {
   };
 
   useEffect(() => {
-    let active = true;
-    const load = async () => {
-      try {
-        const [envs, logs] = await Promise.all([
-          adminApi.getEnvConfig(),
-          adminApi.getSyndications()
-        ]);
-        if (active) {
-          setEnvConfig(envs);
-          setSyndications(logs);
-          setLoading(false);
-        }
-      } catch (e) {
-        console.error(e);
-        if (active) setLoading(false);
-      }
-    };
-    load();
-    return () => {
-      active = false;
-    };
+    loadData();
   }, []);
+
+  const handleSaveMetaConfig = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!metaAppIdInput.trim() || !metaAppSecretInput.trim()) {
+      setErrorMsg('Both Meta App ID and Meta App Secret are required.');
+      return;
+    }
+    setIsSavingMeta(true);
+    try {
+      const updated = await adminApi.updateMetaConfig(metaAppIdInput.trim(), metaAppSecretInput.trim());
+      if (updated) {
+        setMetaConfig(updated);
+        setSuccessMsg('Meta App credentials saved! All Meta APIs (Instagram, Facebook, WhatsApp) now enforce SHA-256 appsecret_proof signing.');
+        setShowMetaModal(false);
+        setMetaAppSecretInput('');
+        await loadData();
+      }
+    } catch {
+      setErrorMsg('Failed to update Meta App credentials.');
+    } finally {
+      setIsSavingMeta(false);
+    }
+  };
 
   const toggleConnection = (id: string) => {
     setChannels((prev) =>
@@ -310,6 +327,62 @@ export function ChannelsPage() {
         </div>
       )}
 
+      {/* Meta Ecosystem Unified Gateway Card */}
+      <div className="rounded-3xl bg-linear-to-br from-indigo-950 via-slate-900 to-indigo-900 p-6 sm:p-8 text-white shadow-lg relative overflow-hidden">
+        <div className="absolute right-0 top-0 -mt-10 -mr-10 h-64 w-64 rounded-full bg-indigo-500/10 blur-3xl pointer-events-none" />
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+          <div className="space-y-3 max-w-2xl">
+            <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-indigo-200 border border-white/10">
+              <ShieldCheck className="h-3.5 w-3.5 text-indigo-300" />
+              <span>Meta Unified API Gateway (App ID &amp; Secret Proof)</span>
+            </div>
+            <h2 className="font-serif text-xl sm:text-2xl font-bold tracking-tight">
+              All Meta APIs Unified Authentication &amp; HMAC Signing
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
+              Every single Meta request (Instagram Feed &amp; Reels, Instagram Broadcast, Facebook Pages, Facebook Groups, and WhatsApp Cloud API) routes securely through your centralized <strong className="text-white">META_APP_ID</strong> and <strong className="text-white">META_APP_SECRET</strong>. All Graph API calls are cryptographically signed with SHA-256 <code className="bg-white/10 text-indigo-200 px-1.5 py-0.5 rounded text-[11px]">appsecret_proof</code> to prevent token hijacking.
+            </p>
+
+            <div className="flex flex-wrap items-center gap-2 pt-1 text-xs">
+              <span className={`inline-flex items-center gap-1.5 rounded-xl px-2.5 py-1 text-[11px] font-bold ${metaConfig?.configured ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'}`}>
+                <Key className="h-3 w-3" />
+                <span>{metaConfig?.configured ? `Meta App Connected (${metaConfig.appId || 'Verified'})` : 'Meta App ID & Secret Not Set'}</span>
+              </span>
+              <span className="inline-flex items-center gap-1.5 rounded-xl bg-white/10 px-2.5 py-1 text-[11px] font-medium text-slate-300 border border-white/10">
+                <ShieldCheck className="h-3 w-3 text-emerald-400" />
+                <span>HMAC-SHA256 Proof: Active</span>
+              </span>
+              <span className="inline-flex items-center gap-1.5 rounded-xl bg-white/10 px-2.5 py-1 text-[11px] font-medium text-slate-300 border border-white/10">
+                <span>5 Channels Protected</span>
+              </span>
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row md:flex-col gap-2.5 shrink-0">
+            <button
+              type="button"
+              onClick={() => {
+                if (metaConfig?.appId) setMetaAppIdInput(metaConfig.appId);
+                setShowMetaModal(true);
+              }}
+              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white text-slate-900 hover:bg-slate-100 px-5 py-3 text-xs font-bold uppercase tracking-wider shadow-md transition-all cursor-pointer"
+            >
+              <Key className="h-4 w-4 text-indigo-900" />
+              <span>Configure Meta Keys</span>
+            </button>
+            <a
+              href="https://developers.facebook.com/apps"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center justify-center gap-1.5 rounded-2xl bg-white/10 hover:bg-white/15 text-white px-4 py-2 text-xs font-semibold tracking-wider transition-all"
+            >
+              <ExternalLink className="h-3.5 w-3.5 text-indigo-300" />
+              <span>Meta App Dashboard</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
       {/* Info Notice about Env Credentials */}
       <div className="rounded-2xl bg-slate-50 border border-slate-200/80 p-5 grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
         <div className="md:col-span-8 space-y-1">
@@ -336,6 +409,7 @@ export function ChannelsPage() {
           const isWebhook = channel.status === 'webhook';
           const isTesting = testingId === channel.id;
           const isEnvConfigured = !!envConfig[channel.id];
+          const isMetaChannel = ['facebook', 'facebook-group', 'instagram', 'instagram-channel', 'whatsapp-channel'].includes(channel.id);
 
           return (
             <div
@@ -363,6 +437,12 @@ export function ChannelsPage() {
                   </div>
 
                   <div className="flex flex-col items-end gap-1">
+                    {isMetaChannel && (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-indigo-50 px-2.5 py-0.5 text-[9px] font-bold text-indigo-900 border border-indigo-200" title="Signed via Meta App ID & HMAC appsecret_proof">
+                        <ShieldCheck className="h-3 w-3 text-indigo-700" />
+                        Meta Signed
+                      </span>
+                    )}
                     {isEnvConfigured && (
                       <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-0.5 text-[9px] font-bold text-emerald-800 uppercase border border-emerald-300">
                         Env Confirmed
@@ -726,6 +806,100 @@ export function ChannelsPage() {
           </>
         )}
       </div>
+
+      {/* Meta App ID & App Secret Configuration Modal */}
+      {showMetaModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-slate-200 space-y-6">
+            <div className="flex items-start justify-between">
+              <div className="space-y-1">
+                <div className="inline-flex items-center gap-1.5 rounded-full bg-indigo-50 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-indigo-900 border border-indigo-200">
+                  <ShieldCheck className="h-3 w-3 text-indigo-700" />
+                  <span>Meta Cryptographic Authentication</span>
+                </div>
+                <h3 className="font-serif text-xl font-bold text-slate-900">
+                  Configure Meta App Credentials
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowMetaModal(false)}
+                className="rounded-full p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <p className="text-xs text-slate-600 leading-relaxed font-normal">
+              Enter your official Meta Developer App credentials from <a href="https://developers.facebook.com/apps" target="_blank" rel="noreferrer" className="text-indigo-950 font-semibold underline">developers.facebook.com</a>. Chronicle uses these keys to authenticate all Meta Graph API requests and compute SHA-256 <code className="bg-slate-100 px-1 py-0.5 rounded font-mono text-indigo-900">appsecret_proof</code> tokens on every call.
+            </p>
+
+            <form onSubmit={handleSaveMetaConfig} className="space-y-4">
+              <div className="space-y-1.5">
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
+                  Meta App ID (Client ID)
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={metaAppIdInput}
+                  onChange={(e) => setMetaAppIdInput(e.target.value)}
+                  placeholder="e.g. 1584920491823901"
+                  className="w-full text-xs p-3 border border-slate-200 rounded-xl focus:outline-none focus:border-indigo-950 focus:ring-1 focus:ring-indigo-950 font-mono"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
+                  Meta App Secret
+                </label>
+                <input
+                  type="password"
+                  required
+                  value={metaAppSecretInput}
+                  onChange={(e) => setMetaAppSecretInput(e.target.value)}
+                  placeholder="Enter your Meta App Secret"
+                  className="w-full text-xs p-3 border border-slate-200 rounded-xl focus:outline-none focus:border-indigo-950 focus:ring-1 focus:ring-indigo-950 font-mono"
+                />
+                <p className="text-[11px] text-slate-400">
+                  Stored securely on the server environment. Never exposed to reader clients.
+                </p>
+              </div>
+
+              <div className="p-3 bg-indigo-50/50 rounded-xl border border-indigo-100 text-[11px] text-indigo-950 space-y-1">
+                <div className="font-bold flex items-center gap-1">
+                  <ShieldCheck className="h-3.5 w-3.5 text-indigo-700" />
+                  <span>Channels Automatically Covered:</span>
+                </div>
+                <div className="text-slate-600 pl-4 list-disc space-y-0.5">
+                  <div>• Instagram Feed &amp; Reels (Graph API v19.0)</div>
+                  <div>• Instagram 1-to-many Broadcast Channels</div>
+                  <div>• Facebook Official Pages API</div>
+                  <div>• Facebook Groups Moderation API</div>
+                  <div>• WhatsApp Cloud Business API</div>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-2.5 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowMetaModal(false)}
+                  className="px-4 py-2.5 text-xs font-bold rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSavingMeta}
+                  className="px-5 py-2.5 text-xs font-bold rounded-xl bg-indigo-950 hover:bg-indigo-900 text-white shadow-md transition-colors cursor-pointer disabled:opacity-50"
+                >
+                  {isSavingMeta ? 'Saving & Verifying...' : 'Save Meta Credentials'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

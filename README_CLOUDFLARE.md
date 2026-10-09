@@ -60,21 +60,18 @@ Cloudflare Workers separates variables into **Plaintext** (in `wrangler.toml`) a
 | **Plaintext** | `NODE_ENV`, `APP_URL`, `INSTAGRAM_USER_ID`, `FACEBOOK_PAGE_ID`, `TELEGRAM_CHANNEL_ID`, `GHOST_ADMIN_URL`, `WORDPRESS_SITE_URL` | Define in `[vars]` block of `wrangler.toml` |
 
 ### Step 3: Configure `wrangler.toml`
-Use the template provided in the root `wrangler.toml`. It includes mappings for all social media and AI integrations. Note that as of Wrangler v4, `node_compat = true` is replaced by:
-```toml
-compatibility_flags = [ "nodejs_compat" ]
-```
+Use the pre-configured `wrangler.toml` in the repository root. It includes:
+*   `main = "apps/server/src/worker.ts"` (pre-built Express bridge for Workers)
+*   `compatibility_date = "2024-09-23"`
+*   `compatibility_flags = [ "nodejs_compat" ]` (Wrangler v4 standard)
+*   Mapping for all public social channel metadata IDs
 
-### Step 4: Entry Point Adaptation
-Cloudflare Workers use a `fetch` handler. If you are using standard Express, you must use an adapter like `itty-router` or a compatibility layer.
-Update `apps/server/src/standalone.ts` or create a `worker.ts` that exports:
-```typescript
-export default {
-  async fetch(request, env, ctx) {
-    // Adapter logic here
-  }
-}
-```
+### Step 4: Production Entry Point (`apps/server/src/worker.ts`)
+The server includes a zero-dependency Fetch API ↔ Express adapter in `apps/server/src/worker.ts`. It:
+*   Converts incoming Web Standard `Request` to Express `(req, res)`
+*   Syncs Cloudflare Worker `env` secrets directly into `process.env` (for Gemini and social tokens)
+*   Routes all `/api/*` endpoints (posts, comments, channels, sync, AI, settings)
+*   Supports Cloudflare Cron Triggers via `scheduled()` handler to auto-publish scheduled essays
 
 ### Step 5: Deploy
 ```bash

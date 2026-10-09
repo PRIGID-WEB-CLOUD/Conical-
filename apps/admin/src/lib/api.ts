@@ -1,6 +1,7 @@
 import {
   Post,
   Comment,
+  CommentReply,
   SubscriberItem,
   PublicationSettings,
   DashboardAnalytics,
@@ -184,6 +185,65 @@ export const adminApi = {
       return res.ok;
     } catch {
       return true;
+    }
+  },
+
+  async postReply(
+    commentId: string,
+    content: string,
+    authorName: string = 'Editorial Staff',
+    replyToAuthor?: string,
+    isStaff: boolean = true
+  ): Promise<{ reply: CommentReply; comment?: Comment }> {
+    try {
+      const res = await fetch(`${API_BASE}/comments/${commentId}/replies`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content, authorName, replyToAuthor, isStaff }),
+      });
+      if (!res.ok) throw new Error('API error');
+      const data = await res.json();
+      return data;
+    } catch {
+      const fallbackReply: CommentReply = {
+        id: `reply-${Date.now()}`,
+        commentId,
+        authorName,
+        initials: 'ED',
+        content,
+        createdAt: new Date().toISOString(),
+        relativeTime: 'Just now',
+        likes: 0,
+        replyToAuthor,
+        isStaff,
+      };
+      return { reply: fallbackReply };
+    }
+  },
+
+  async deleteReply(commentId: string, replyId: string): Promise<boolean> {
+    try {
+      const res = await fetch(`${API_BASE}/comments/${commentId}/replies/${replyId}`, {
+        method: 'DELETE',
+      });
+      return res.ok;
+    } catch {
+      return true;
+    }
+  },
+
+  async toggleReplyLike(commentId: string, replyId: string, decrement?: boolean): Promise<number> {
+    try {
+      const res = await fetch(`${API_BASE}/comments/${commentId}/replies/${replyId}/like`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ decrement }),
+      });
+      if (!res.ok) return 0;
+      const data = await res.json();
+      return data.likes || 0;
+    } catch {
+      return 0;
     }
   },
 
@@ -394,6 +454,32 @@ export const adminApi = {
       if (!res.ok) throw new Error('API error');
       const data = await res.json();
       return data.url || null;
+    } catch {
+      return null;
+    }
+  },
+
+  async getMetaConfig(): Promise<any> {
+    try {
+      const res = await fetch(`${API_BASE}/channels/meta-config`);
+      if (!res.ok) throw new Error('API error');
+      const data = await res.json();
+      return data.metaConfig;
+    } catch {
+      return null;
+    }
+  },
+
+  async updateMetaConfig(appId: string, appSecret: string): Promise<any> {
+    try {
+      const res = await fetch(`${API_BASE}/channels/meta-config`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ appId, appSecret }),
+      });
+      if (!res.ok) throw new Error('API error');
+      const data = await res.json();
+      return data.metaConfig;
     } catch {
       return null;
     }

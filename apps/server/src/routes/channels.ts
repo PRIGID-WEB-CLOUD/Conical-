@@ -5,11 +5,15 @@ const router = Router();
 
 // GET /api/channels - Get all channels and their ENV configuration status
 router.get('/', (_req: Request, res: Response) => {
+  const { appId, appSecret } = serverStore.getMetaCredentials();
+  const hasMetaApp = Boolean(appId && appSecret);
+
   const envConfig = {
-    instagram: !!(process.env.INSTAGRAM_ACCESS_TOKEN || process.env.INSTAGRAM_USER_ID),
-    'instagram-channel': !!(process.env.INSTAGRAM_CHANNEL_TOKEN),
-    facebook: !!(process.env.FACEBOOK_PAGE_ACCESS_TOKEN || process.env.FACEBOOK_PAGE_ID),
-    'facebook-group': !!(process.env.FACEBOOK_GROUP_ACCESS_TOKEN),
+    meta_app: hasMetaApp,
+    instagram: !!(process.env.INSTAGRAM_ACCESS_TOKEN || process.env.INSTAGRAM_USER_ID || hasMetaApp),
+    'instagram-channel': !!(process.env.INSTAGRAM_CHANNEL_TOKEN || hasMetaApp),
+    facebook: !!(process.env.FACEBOOK_PAGE_ACCESS_TOKEN || process.env.FACEBOOK_PAGE_ID || hasMetaApp),
+    'facebook-group': !!(process.env.FACEBOOK_GROUP_ACCESS_TOKEN || hasMetaApp),
     'x-twitter': !!(process.env.X_API_KEY || process.env.X_ACCESS_TOKEN),
     linkedin: !!(process.env.LINKEDIN_OAUTH_TOKEN || process.env.LINKEDIN_ORG_ID),
     wordpress: !!(process.env.WORDPRESS_APP_PASSWORD || process.env.WORDPRESS_SITE_URL),
@@ -18,10 +22,33 @@ router.get('/', (_req: Request, res: Response) => {
     telegram: !!(process.env.TELEGRAM_BOT_TOKEN || process.env.TELEGRAM_CHANNEL_ID),
     youtube: !!(process.env.YOUTUBE_ACCESS_TOKEN || process.env.GOOGLE_OAUTH_TOKEN),
     blogger: !!(process.env.BLOGGER_ACCESS_TOKEN || process.env.GOOGLE_OAUTH_TOKEN),
-    'whatsapp-channel': !!(process.env.WHATSAPP_ACCESS_TOKEN || process.env.WHATSAPP_PHONE_ID),
+    'whatsapp-channel': !!(process.env.WHATSAPP_ACCESS_TOKEN || process.env.WHATSAPP_PHONE_ID || hasMetaApp),
   };
 
-  res.json({ envConfig });
+  res.json({
+    envConfig,
+    metaConfig: serverStore.getMetaConfigStatus()
+  });
+});
+
+// GET /api/channels/meta-config - Retrieve Meta App config status
+router.get('/meta-config', (_req: Request, res: Response) => {
+  res.json({
+    metaConfig: serverStore.getMetaConfigStatus()
+  });
+});
+
+// POST /api/channels/meta-config - Set or update Meta App ID and Secret
+router.post('/meta-config', (req: Request, res: Response) => {
+  const { appId, appSecret } = req.body;
+  if (!appId || !appSecret) {
+    return res.status(400).json({ error: 'Both appId and appSecret are required' });
+  }
+  serverStore.setMetaConfig(String(appId), String(appSecret));
+  res.json({
+    success: true,
+    metaConfig: serverStore.getMetaConfigStatus()
+  });
 });
 
 // GET /api/channels/syndications - Get syndication history logs
@@ -96,9 +123,10 @@ router.get('/:channelId/auth-url', (req: Request, res: Response) => {
     return res.json({ url: authUrl });
   }
   
+  const { appId: metaAppId } = serverStore.getMetaCredentials();
   const clientId = channelId === 'instagram' 
-    ? (process.env.INSTAGRAM_CLIENT_ID || '123456789') 
-    : (process.env.FACEBOOK_CLIENT_ID || '987654321');
+    ? (metaAppId || process.env.INSTAGRAM_CLIENT_ID || '123456789') 
+    : (metaAppId || process.env.FACEBOOK_CLIENT_ID || '987654321');
 
   const scopes = channelId === 'instagram'
     ? 'instagram_basic,instagram_content_publish'
@@ -114,29 +142,45 @@ router.get('/:channelId/auth-url', (req: Request, res: Response) => {
 });
 
 // GET /api/channels/:channelId/callback - OAuth2 callback receiver and cross-origin notifier
-router.get(['/:channelId/callback', '/:channelId/callback/'], (req: Request, res: Response) => {
+router.get(['/:channelId/callback', '/:channelId/callback/'], async (req: Request, res: Response) => {
   const channelId = String(req.params.channelId);
   const code = req.query.code as string | undefined;
 
   if (code) {
+    const origin = req.headers.referer || req.headers.origin || 'https://ais-dev-6k4td64rydv7fzi3tlpvdl-57519113824.europe-west3.run.app';
+    const cleanOrigin = origin.endsWith('/') ? origin.slice(0, -1) : origin;
+    const redirectUri = `${cleanOrigin}/api/channels/${channelId}/callback`;
+
+    // Attempt real Meta token exchange if Meta App ID and Secret are configured
+    const isMetaChannel = ['instagram', 'instagram-channel', 'facebook', 'facebook-group', 'whatsapp-channel'].includes(channelId);
+    let exchangedToken: string | null = null;
+    if (isMetaChannel) {
+      const exchangeResult = await serverStore.exchangeMetaOAuthCode(code, redirectUri);
+      if (exchangeResult?.accessToken) {
+        exchangedToken = exchangeResult.accessToken;
+      }
+    }
+
+    const tokenToStore = exchangedToken || `oauth_token_${code.substring(0, 15)}`;
+
     if (channelId === 'instagram' || channelId === 'instagram-channel') {
-      process.env.INSTAGRAM_ACCESS_TOKEN = `oauth_token_${code.substring(0, 15)}`;
-      if (channelId === 'instagram-channel') process.env.INSTAGRAM_CHANNEL_TOKEN = `oauth_token_${code.substring(0, 15)}`;
+      process.env.INSTAGRAM_ACCESS_TOKEN = tokenToStore;
+      if (channelId === 'instagram-channel') process.env.INSTAGRAM_CHANNEL_TOKEN = tokenToStore;
     } else if (channelId === 'facebook' || channelId === 'facebook-group') {
-      process.env.FACEBOOK_PAGE_ACCESS_TOKEN = `oauth_token_${code.substring(0, 15)}`;
-      if (channelId === 'facebook-group') process.env.FACEBOOK_GROUP_ACCESS_TOKEN = `oauth_token_${code.substring(0, 15)}`;
+      process.env.FACEBOOK_PAGE_ACCESS_TOKEN = tokenToStore;
+      if (channelId === 'facebook-group') process.env.FACEBOOK_GROUP_ACCESS_TOKEN = tokenToStore;
     } else if (channelId === 'youtube') {
-      process.env.YOUTUBE_ACCESS_TOKEN = `oauth_token_${code.substring(0, 15)}`;
-      process.env.GOOGLE_OAUTH_TOKEN = `oauth_token_${code.substring(0, 15)}`;
+      process.env.YOUTUBE_ACCESS_TOKEN = tokenToStore;
+      process.env.GOOGLE_OAUTH_TOKEN = tokenToStore;
     } else if (channelId === 'blogger') {
-      process.env.BLOGGER_ACCESS_TOKEN = `oauth_token_${code.substring(0, 15)}`;
-      process.env.GOOGLE_OAUTH_TOKEN = `oauth_token_${code.substring(0, 15)}`;
+      process.env.BLOGGER_ACCESS_TOKEN = tokenToStore;
+      process.env.GOOGLE_OAUTH_TOKEN = tokenToStore;
     } else if (channelId === 'x-twitter') {
-      process.env.X_ACCESS_TOKEN = `oauth_token_${code.substring(0, 15)}`;
+      process.env.X_ACCESS_TOKEN = tokenToStore;
     } else if (channelId === 'linkedin') {
-      process.env.LINKEDIN_OAUTH_TOKEN = `oauth_token_${code.substring(0, 15)}`;
+      process.env.LINKEDIN_OAUTH_TOKEN = tokenToStore;
     } else if (channelId === 'whatsapp-channel') {
-      process.env.WHATSAPP_ACCESS_TOKEN = `oauth_token_${code.substring(0, 15)}`;
+      process.env.WHATSAPP_ACCESS_TOKEN = tokenToStore;
     }
   }
 

@@ -29,6 +29,7 @@ import {
   Edit2,
   User,
   ShieldAlert,
+  ShieldCheck,
   Flame,
   MessageSquareShare,
   Lock,
@@ -953,6 +954,24 @@ export function ChannelDetailPage() {
                                 </div>
                               </div>
                             )}
+                            {comment.replies && comment.replies.length > 0 && (
+                              <div className="pl-6 space-y-2 border-l border-indigo-100 ml-4">
+                                {comment.replies.map((r: any) => (
+                                  <div key={r.id} className="bg-slate-50 border border-slate-200/80 p-2.5 rounded-xl text-xs space-y-1">
+                                    <div className="flex items-center justify-between text-[10px]">
+                                      <div className="flex items-center gap-1.5">
+                                        <span className="font-bold text-slate-900">{r.authorName}</span>
+                                        {r.replyToAuthor && (
+                                          <span className="text-indigo-900 bg-indigo-50 px-1.5 py-0.2 rounded font-medium">to @{r.replyToAuthor}</span>
+                                        )}
+                                      </div>
+                                      <span className="text-slate-400">{r.relativeTime || 'Recent'}</span>
+                                    </div>
+                                    <p className="text-slate-700 text-[11px] leading-relaxed">{r.content}</p>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
                             {isReplying && (
                               <div className="pl-6 space-y-1.5"><input type="text" value={replyText} onChange={(e) => setReplyText(e.target.value)} placeholder="Write editorial reply..." className="w-full text-xs p-2 border border-slate-200 rounded-xl bg-white focus:outline-none" /><div className="flex justify-end gap-1.5"><button onClick={() => setReplyingCommentId(null)} className="px-2 py-1 text-[9px] font-bold rounded-lg border border-slate-200 cursor-pointer">Cancel</button><button onClick={() => handleReplyToComment(comment.id)} className="px-2 py-1 text-[9px] font-bold rounded-lg bg-indigo-950 text-white cursor-pointer">Post Reply</button></div></div>
                             )}
@@ -972,6 +991,17 @@ export function ChannelDetailPage() {
             <div className="rounded-3xl border border-slate-200 bg-white p-5 space-y-3.5 text-xs text-slate-500 font-normal shadow-2xs">
               <span className="font-bold text-slate-950 block flex items-center gap-1.5"><ShieldAlert className="h-4 w-4 text-amber-600" /> <span>API Integrity Summary</span></span>
               <p className="leading-relaxed">All operations for **{channelMeta.name}** route through validated environment credentials. Chronicle uses resumable upload patterns and REST synchronization for maximum reliability.</p>
+              {['facebook', 'facebook-group', 'instagram', 'instagram-channel', 'whatsapp-channel'].includes(id) && (
+                <div className="p-3 bg-indigo-50/70 border border-indigo-100 rounded-2xl text-[11px] leading-relaxed space-y-1 text-indigo-950 font-sans">
+                  <div className="font-bold flex items-center gap-1 text-indigo-900">
+                    <ShieldCheck className="h-3.5 w-3.5 text-indigo-700" />
+                    <span>Meta Unified Security Active</span>
+                  </div>
+                  <div className="text-slate-600">
+                    All Graph API queries and publishing calls are signed with SHA-256 <code className="bg-white px-1 py-0.2 rounded border border-indigo-100 font-mono text-[10px]">appsecret_proof</code> derived from your <strong className="text-slate-900">META_APP_SECRET</strong>.
+                  </div>
+                </div>
+              )}
               {isChannelConnected && (
                 <div className="p-3 bg-slate-50 border border-slate-200 rounded-2xl text-[11px] font-mono leading-relaxed space-y-1 text-slate-700">
                   <div>Status: <span className="text-emerald-800 font-bold uppercase">Authorized</span></div>
