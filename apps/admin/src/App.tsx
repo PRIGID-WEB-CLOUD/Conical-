@@ -52,9 +52,13 @@ function ProtectedAdminRoutes() {
 }
 
 export function App() {
+  const dynamicBasename =
+    (import.meta as any).env?.VITE_BASE_PATH ??
+    (typeof window !== 'undefined' && window.location.pathname.startsWith('/admin') ? '/admin' : '/');
+
   return (
     <AdminAuthProvider>
-      <BrowserRouter basename="/admin">
+      <BrowserRouter basename={dynamicBasename}>
         <Routes>
           {/* Standalone Authentication routes */}
           <Route path="/login" element={<LoginPage />} />

@@ -16,7 +16,13 @@ let cronTimerStarted = false;
 export function createApiApp() {
   const app = express();
 
-  app.use(cors());
+  app.use(
+    cors({
+      origin: '*',
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+    })
+  );
   app.use(express.json());
 
   // Start automated background cron scheduler (every 5 seconds)

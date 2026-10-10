@@ -5,7 +5,7 @@ import path from 'path';
 
 export default defineConfig({
   root: import.meta.dirname,
-  base: '/admin/',
+  base: process.env.VITE_BASE_PATH || '/admin/',
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {

@@ -39,25 +39,30 @@ Once deployed, Cloudflare gives you a worker URL, for example:
 
 ---
 
-## 2. Render Static Sites (Frontend Deployment)
+## 2. Render Blueprint & Static Sites (`render.yaml`)
 
-Render Static Sites are ideal for the Vite React single-page applications.
+Render supports automatic infrastructure-as-code deployment via `render.yaml`. The blueprint is configured for static sites (no disallowed `plan` property and no `origins` schema keys).
 
-### A. Deploy Reader Site (`apps/readers`)
-1. Log in to [Render Dashboard](https://dashboard.render.com).
-2. Click **New +** > **Static Site**.
-3. Connect your repository.
-4. Set the following build configuration:
-   - **Name**: `chronicle-blog` (or your choice)
-   - **Branch**: `main`
-   - **Root Directory**: `apps/readers`
-   - **Build Command**: `npm install && npm run build`
-   - **Publish Directory**: `dist`
-5. Under **Environment Variables**, add:
-   - **Key**: `VITE_API_URL`
-   - **Value**: `https://chronicle-api.<your-subdomain>.workers.dev/api`
-6. Click **Create Static Site**.
-*(Client-side routing `/post/:slug` works out of the box because of `apps/readers/public/_redirects`).*
+### Option 1: One-Click Render Blueprint (Recommended)
+1. Go to [Render Dashboard](https://dashboard.render.com).
+2. Click **New +** > **Blueprint**.
+3. Select your repository. Render detects `/render.yaml` automatically.
+4. Render provisions both static sites:
+   - **`chronicle-blog`**: readers frontend (`./apps/readers/dist`)
+   - **`chronicle-admin`**: editorial CMS (`./apps/admin/dist`)
+5. Set `VITE_API_URL` to your Cloudflare Worker URL (`https://chronicle-api.<worker>.workers.dev/api`) and click **Apply**.
+
+---
+
+### Option 2: Manual Static Site Setup in Render Dashboard
+
+#### A. Deploy Reader Site (`apps/readers`)
+1. Click **New +** > **Static Site**.
+2. Build configuration:
+   - **Build Command**: `npm install && npm run build:readers`
+   - **Publish Directory**: `./apps/readers/dist`
+3. Environment Variables:
+   - `VITE_API_URL`: `https://chronicle-api.<worker>.workers.dev/api`
 
 ---
 

@@ -2,6 +2,10 @@
   "name": "ai-studio-applet",
   "version": "0.1.0",
   "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
     "dev": "tsx server.ts",
     "dev:api": "tsx apps/server/src/standalone.ts",

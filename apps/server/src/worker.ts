@@ -121,8 +121,8 @@ const worker = {
         status: 204,
         headers: {
           'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
+          'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, Accept',
           'Access-Control-Max-Age': '86400',
         },
       });
@@ -134,9 +134,9 @@ const worker = {
       const response = await handleWithExpress(app, request);
       // Ensure CORS header is always present on API responses
       const newHeaders = new Headers(response.headers);
-      if (!newHeaders.has('Access-Control-Allow-Origin')) {
-        newHeaders.set('Access-Control-Allow-Origin', '*');
-      }
+      newHeaders.set('Access-Control-Allow-Origin', '*');
+      newHeaders.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+      newHeaders.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept');
       return new Response(response.body, {
         status: response.status,
         headers: newHeaders,
