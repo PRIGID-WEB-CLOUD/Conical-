@@ -19,7 +19,8 @@ import {
   INITIAL_MEDIA
 } from '@chronicle/shared';
 
-const API_BASE = (import.meta as any).env?.VITE_API_URL || '/api';
+const rawApiUrl = (import.meta as any).env?.VITE_API_URL || (import.meta as any).env?.VITE_API_BASE_URL || '/api';
+const API_BASE = rawApiUrl.endsWith('/') ? rawApiUrl.slice(0, -1) : rawApiUrl;
 
 export const adminApi = {
   async getPosts(filter?: { status?: string; category?: string; search?: string }): Promise<Post[]> {

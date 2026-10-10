@@ -115,10 +115,32 @@ const worker = {
 
     const url = new URL(request.url);
 
+    // Handle OPTIONS preflight requests for cross-origin frontend (Render static site)
+    if (request.method === 'OPTIONS') {
+      return new Response(null, {
+        status: 204,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
+          'Access-Control-Max-Age': '86400',
+        },
+      });
+    }
+
     // 2. Route API requests to Express
     if (url.pathname.startsWith('/api')) {
       const app = getApp();
-      return handleWithExpress(app, request);
+      const response = await handleWithExpress(app, request);
+      // Ensure CORS header is always present on API responses
+      const newHeaders = new Headers(response.headers);
+      if (!newHeaders.has('Access-Control-Allow-Origin')) {
+        newHeaders.set('Access-Control-Allow-Origin', '*');
+      }
+      return new Response(response.body, {
+        status: response.status,
+        headers: newHeaders,
+      });
     }
 
     // 3. Static asset fallback (if Cloudflare Workers Static Assets binding is attached)
