@@ -29,8 +29,10 @@ SUBSTACK_PUBLICATION_URL = ""
 # - YOUTUBE_ACCESS_TOKEN
 # - GOOGLE_OAUTH_TOKEN
 
-[site]
-bucket = "./apps/readers/dist"
+# Frontends are hosted on Render; this worker acts purely as the backend API
+# If you ever want to serve static assets directly from Cloudflare, uncomment:
+# [site]
+# bucket = "./apps/readers/dist"
 
 # Optional: Dedicated workers for different tasks
 # [env.production]
